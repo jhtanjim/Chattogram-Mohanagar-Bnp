@@ -33,9 +33,10 @@ const Home = () => {
       {/* Banner */}
       <div className="max-w-screen-2xl mx-4 my-4 rounded-2xl lg:mx-auto overflow-hidden">
         {/* Carousel (simply a static section here for simplicity) */}
+
         <div>
           <img
-            src="https://imgs.news18.com/ibnlive/uploads/2024/08/khaleda-zia-2024-08-304c0e136b37c71332f548fe2c8d89f6.png"
+            src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
             alt="খালেদা জিয়া"
             className="w-full lg:h-[650px] object-cover"
             width={1200}
@@ -91,7 +92,7 @@ const Home = () => {
                   >
                     {/* Profile img */}
                     <img
-                      src={user.img}
+                      src={user.image}
                       alt={user.fullName}
                       className="w-32 h-32 rounded-full object-cover mb-4 md:mb-0 md:mr-6"
                     />
