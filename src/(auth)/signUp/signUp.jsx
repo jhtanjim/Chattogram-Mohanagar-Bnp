@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 // Function to generate random math problem
 const generateMathProblem = () => {
@@ -105,19 +106,31 @@ const SignUp = () => {
 
     // Validation for NID
     if (!formData.nid) {
-      alert("NID বাধ্যতামূলক।");
+      Swal.fire({
+        title: "ত্রুটি",
+        text: "NID বাধ্যতামূলক।",
+        icon: "error",
+      });
       return;
     }
 
     // Validate password match
     if (formData.password !== formData.confirmPassword) {
-      alert("পাসওয়ার্ড মিলছে না!");
+      Swal.fire({
+        title: "ত্রুটি",
+        text: "পাসওয়ার্ড মিলছে না!",
+        icon: "error",
+      });
       return;
     }
 
     // Validate CAPTCHA answer
     if (parseInt(capVal) !== mathProblem.solution) {
-      alert("CAPTCHA সঠিক নয়!");
+      Swal.fire({
+        title: "ত্রুটি",
+        text: "CAPTCHA সঠিক নয়!",
+        icon: "error",
+      });
       return;
     }
 
@@ -147,23 +160,37 @@ const SignUp = () => {
 
       if (response.ok) {
         const result = await response.json();
-        alert("সাইন আপ সফল হয়েছে!");
+        Swal.fire({
+          title: "সফল",
+          text: "সাইন আপ সফল হয়েছে!",
+          icon: "success",
+        }).then(() => {
+          // Store user data in localStorage
+          localStorage.setItem("userData", JSON.stringify(result.user));
 
-        // Store user data in localStorage
-        localStorage.setItem("userData", JSON.stringify(result.user));
+          // Use login context to set the user state
+          login(result.token, result.user);
 
-        // Use login context to set the user state
-        login(result.token, result.user);
-
-        // Redirect after successful signup
-        navigate("/"); // Replace `router.push` with `navigate`
+          // Redirect after successful signup
+          navigate("/");
+        });
 
         console.log("Form submitted successfully:", result);
       } else {
         const errorText = await response.text();
+        Swal.fire({
+          title: "ত্রুটি",
+          text: `সাইন আপ ব্যর্থ হয়েছে: ${errorText}`,
+          icon: "error",
+        });
         console.error("Error submitting form:", response.status, errorText);
       }
     } catch (error) {
+      Swal.fire({
+        title: "ত্রুটি",
+        text: "সার্ভারের সাথে যোগাযোগ ব্যর্থ হয়েছে।",
+        icon: "error",
+      });
       console.error("Error submitting form:", error);
     }
   };

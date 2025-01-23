@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import Swal from "sweetalert2";
 
 const SignIn = () => {
   const { login } = useAuth(); // Use the login function from the AuthContext
@@ -12,7 +13,12 @@ const SignIn = () => {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("ইমেইল অথবা পাসওয়ার্ড ফাঁকা থাকতে পারে না!");
+      Swal.fire({
+        icon: "warning",
+        title: "ফাঁকা ইনপুট!",
+        text: "ইমেইল অথবা পাসওয়ার্ড ফাঁকা থাকতে পারে না!",
+        confirmButtonColor: "#3085d6",
+      });
       return;
     }
 
@@ -31,15 +37,30 @@ const SignIn = () => {
       const result = await response.json();
 
       if (response.ok) {
-        alert("লগইন সফল হয়েছে!");
+        Swal.fire({
+          icon: "success",
+          title: "সফল!",
+          text: "লগইন সফল হয়েছে!",
+          confirmButtonColor: "#16A34A",
+        });
         login(result.token, result.user); // Log in the user using the context's login method
         navigate("/"); // Navigate to the home page
       } else {
-        alert(result.message || "লগইন ব্যর্থ হয়েছে!");
+        Swal.fire({
+          icon: "error",
+          title: "ব্যর্থ!",
+          text: result.message || "লগইন ব্যর্থ হয়েছে!",
+          confirmButtonColor: "#d33",
+        });
       }
     } catch (error) {
       console.error("Error during login:", error);
-      alert("লগইন করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।");
+      Swal.fire({
+        icon: "error",
+        title: "ত্রুটি!",
+        text: "লগইন করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।",
+        confirmButtonColor: "#d33",
+      });
     }
   };
 

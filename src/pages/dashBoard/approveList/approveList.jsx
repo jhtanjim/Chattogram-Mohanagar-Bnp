@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const ApproveList = () => {
   const [users, setUsers] = useState([]);
@@ -35,35 +36,61 @@ const ApproveList = () => {
   };
 
   const approveUser = async (userId) => {
-    setApprovingUserId(userId);
-    try {
-      const response = await fetch(
-        `https://bnp-api-9oht.onrender.com/user/${userId}/verify`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userToken}`,
-          },
-          body: JSON.stringify({ isVerified: true }),
+    // Show confirmation dialog
+    const result = await Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "এই ব্যবহারকারীকে অনুমোদন করতে চান?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#28a745",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "হ্যাঁ, অনুমোদন করুন",
+      cancelButtonText: "না",
+    });
+
+    if (result.isConfirmed) {
+      setApprovingUserId(userId);
+      try {
+        const response = await fetch(
+          `https://bnp-api-9oht.onrender.com/user/${userId}/verify`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${userToken}`,
+            },
+            body: JSON.stringify({ isVerified: true }),
+          }
+        );
+
+        if (response.ok) {
+          // Show success alert
+          Swal.fire({
+            icon: "success",
+            title: "সফল!",
+            text: "ব্যবহারকারী অনুমোদিত হয়েছে।",
+            confirmButtonColor: "#28a745",
+          });
+
+          // Update the local state to reflect the change
+          setUsers(users.filter((user) => user.id !== userId));
+        } else {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Approval failed");
         }
-      );
+      } catch (error) {
+        console.error("Error approving user:", error);
 
-      // Log response for debugging
-      console.log("Response status:", response.status);
-      const responseBody = await response.json();
-      console.log("Response body:", responseBody);
-
-      if (response.ok) {
-        // Update the local state to reflect the change
-        setUsers(users.filter((user) => user.id !== userId));
-      } else {
-        console.error("Failed to approve user:", responseBody);
+        // Show error alert
+        Swal.fire({
+          icon: "error",
+          title: "ব্যর্থ!",
+          text: `ব্যবহারকারী অনুমোদন ব্যর্থ হয়েছে: ${error.message}`,
+          confirmButtonColor: "#d33",
+        });
+      } finally {
+        setApprovingUserId(null);
       }
-    } catch (error) {
-      console.error("Error approving user:", error);
-    } finally {
-      setApprovingUserId(null);
     }
   };
 

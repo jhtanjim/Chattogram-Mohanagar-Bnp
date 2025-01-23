@@ -7,6 +7,8 @@ import DashBoard from "../pages/dashBoard/dashBoard/dashBoard";
 import MyProfile from "../pages/dashBoard/myprofile/myprofile";
 import ProfileCard from "../pages/dashBoard/profileCard/profileCard";
 import ApproveList from "../pages/dashBoard/approveList/approveList";
+import Elections from "../pages/dashBoard/elections/elections";
+import ElectionDetail from "../pages/dashBoard/elections/electionDetail";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -39,6 +41,14 @@ export const router = createBrowserRouter([
       {
         path: "/approveList",
         element: <ApproveList />,
+      },
+      {
+        path: "/elections",
+        element: <Elections />,
+      },
+      {
+        path: "/elections/:id",
+        element: <ElectionDetail />,
       },
     ],
   },
