@@ -1,49 +1,15 @@
-import { useEffect, useState, useRef } from "react";
+import { useRef } from "react";
 import Barcode from "react-barcode"; // Import Barcode library
 import { FaDownload } from "react-icons/fa";
-import { useAuth } from "../../../contexts/AuthContext";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { useUserData } from "../../../hooks/useUserData";
 
 const ProfileCard = () => {
-  const { user } = useAuth(); // Fetching user data from AuthContext
+  const { userData } = useUserData(); // Fetch user data from context
   const cardRef = useRef(); // Reference to the ID card
-  console.log(user);
 
-  const [profileData, setProfileData] = useState({
-    name: "",
-    id: "",
-    email: "",
-    phone: "",
-    nid: "",
-    birthDate: "",
-    politicalPosition: "",
-    ward: "",
-    thana: "",
-    mahanagar: "",
-    pollingCenter: "",
-    img: "",
-  });
-
-  useEffect(() => {
-    if (user) {
-      setProfileData({
-        name: user.fullName || "N/A",
-        id: user.partyId || "N/A",
-        email: user.email || "N/A",
-        phone: user.mobile || "N/A",
-        nid: user.nid || "N/A",
-        birthDate: user.created_at || "Not Provided",
-        politicalPosition: user.userType || "N/A",
-        ward: user.ward || "N/A",
-        thana: user.thana || "N/A",
-        mahanagar: user.mohanagar || "N/A",
-        pollingCenter: user.electionCenter || "N/A",
-        img: user.image || "https://via.placeholder.com/150",
-      });
-    }
-  }, [user]);
-
+  // Function to download the ID card as a PDF
   const downloadPDF = () => {
     const cardElement = cardRef.current;
 
@@ -56,9 +22,17 @@ const ProfileCard = () => {
       const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`${profileData.name}_ID_Card.pdf`);
+      pdf.save(`${userData?.fullName}_ID_Card.pdf`);
     });
   };
+
+  if (!userData) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-gray-500 text-lg">Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-[700px] lg:mx-auto mx-4 my-10">
@@ -68,7 +42,7 @@ const ProfileCard = () => {
       >
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
-          <div className=" relative overflow-hidden rounded-full">
+          <div className="relative overflow-hidden rounded-full">
             <img
               className="w-20 h-20"
               src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Bangladesh_Nationalist_Party.svg"
@@ -81,7 +55,7 @@ const ProfileCard = () => {
             বাংলাদেশ জাতীয়তাবাদী দল
           </h1>
 
-          <div className=" relative overflow-hidden rounded-full">
+          <div className="relative overflow-hidden rounded-full">
             <img
               className="w-20 h-20"
               src="https://projonmonews24.com/uploads/news/18250/1509170062.jpg"
@@ -94,12 +68,12 @@ const ProfileCard = () => {
         {/* ID Section */}
         <div className="flex flex-col sm:flex-row mx-4 justify-between gap-4">
           <div className="my-4 font-bold">
-            <p>আইডি নং : {profileData.id}</p>
+            <p>আইডি নং : {userData.partyId || "N/A"}</p>
           </div>
           <div className="flex justify-center">
             <Barcode
               className="max-w-full"
-              value={profileData.id.slice(-8) || "00000000"}
+              value={userData.partyId?.slice(-8) || "00000000"}
               width={2.2}
               height={40}
               displayValue={false}
@@ -110,36 +84,38 @@ const ProfileCard = () => {
         {/* Profile Details */}
         <div className="flex flex-col md:flex-row gap-6 items-center">
           <img
-            src={profileData.img}
+            src={userData.image || "https://via.placeholder.com/150"}
             alt="Profile"
             className="h-52 w-44 object-cover border-2 border-black/10 rounded-md mx-auto md:mx-0"
           />
           <div className="flex-1 space-y-3 font-bold">
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">নাম</span>
-              <span>: {profileData.name}</span>
+              <span>: {userData.fullName || "N/A"}</span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">সদস্য ধরণ</span>
               <span className="text-green-600">
-                : {profileData.politicalPosition}
+                : {userData.userType || "N/A"}
               </span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">ইউনিট</span>
-              <span className="text-red-600">: {profileData.mahanagar}</span>
+              <span className="text-red-600">
+                : {userData.mohanagar || "N/A"}
+              </span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">থানা</span>
-              <span>: {profileData.thana}</span>
+              <span>: {userData.thana || "N/A"}</span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">ওয়ার্ড</span>
-              <span>: {profileData.ward}</span>
+              <span>: {userData.ward || "N/A"}</span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">ইস্যু তারিখ</span>
-              <span>: {profileData.birthDate}</span>
+              <span>: {userData.updatedAt || "Not Provided"}</span>
             </div>
             <div>
               <span className="text-xs">
