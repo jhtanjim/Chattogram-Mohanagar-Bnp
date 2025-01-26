@@ -115,8 +115,14 @@ const ProfileCard = () => {
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">ইস্যু তারিখ</span>
-              <span>: {userData.updatedAt || "Not Provided"}</span>
+              <span>
+                :{" "}
+                {userData.updatedAt
+                  ? new Date(userData.updatedAt).toISOString().split("T")[0]
+                  : "Not Provided"}
+              </span>
             </div>
+
             <div>
               <span className="text-xs">
                 এই কার্ডটি শুধুমাত্র বি এন পির সাংগঠনিক কর্মকান্ডের জন্য
