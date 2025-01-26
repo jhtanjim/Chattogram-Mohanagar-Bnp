@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import Barcode from "react-barcode";
-import { FaDownload } from "react-icons/fa";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+// import { FaDownload } from "react-icons/fa";
+// import jsPDF from "jspdf";
+// import html2canvas from "html2canvas";
 import { useUserData } from "../../../hooks/useUserData";
 
 const ProfileCard = () => {
@@ -10,21 +10,21 @@ const ProfileCard = () => {
   const cardRef = useRef(); // Reference to the ID card
 
   // Function to download the ID card as a PDF
-  const downloadPDF = () => {
-    const cardElement = cardRef.current;
+  // const downloadPDF = () => {
+  //   const cardElement = cardRef.current;
 
-    html2canvas(cardElement, { scale: 2, useCORS: true }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("portrait", "pt", "a4");
+  //   html2canvas(cardElement, { scale: 2, useCORS: true }).then((canvas) => {
+  //     const imgData = canvas.toDataURL("image/png");
+  //     const pdf = new jsPDF("portrait", "pt", "a4");
 
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  //     const imgProps = pdf.getImageProperties(imgData);
+  //     const pdfWidth = pdf.internal.pageSize.getWidth();
+  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`${userData?.fullName}_ID_Card.pdf`);
-    });
-  };
+  //     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+  //     pdf.save(`${userData?.fullName}_ID_Card.pdf`);
+  //   });
+  // };
 
   if (!userData) {
     return (
@@ -137,7 +137,7 @@ const ProfileCard = () => {
         </div>
       </div>
 
-      <div className="my-4">
+      {/* <div className="my-4">
         <button
           className="w-full text-green-700 hover:text-yellow-500 font-bold py-2 px-4 rounded-lg"
           onClick={downloadPDF}
@@ -145,7 +145,7 @@ const ProfileCard = () => {
           <FaDownload className="inline-block mr-2" />
           আইডি কার্ড ডাউনলোড
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
