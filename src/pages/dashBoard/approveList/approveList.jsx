@@ -118,9 +118,9 @@ const ApproveList = () => {
               <thead className="bg-green-100">
                 <tr>
                   <th className="text-center border p-2">নাম</th>
-                  <th className="text-center border p-2">ইমেইল</th>
                   <th className="text-center border p-2">মোবাইল</th>
-                  <th className="text-center border p-2">এনআইডি</th>
+                  <th className="text-center border p-2">কেন্দ্রের নাম,</th>
+                  <th className="text-center border p-2">স্থানীয় নেতার নাম</th>
                   <th className="text-center border p-2">অনুমোদন</th>
                 </tr>
               </thead>
@@ -128,9 +128,11 @@ const ApproveList = () => {
                 {currentUsers.map((user) => (
                   <tr key={user.id}>
                     <td className="border p-2">{user.fullName || "N/A"}</td>
-                    <td className="border p-2">{user.email || "N/A"}</td>
                     <td className="border p-2">{user.mobile || "N/A"}</td>
-                    <td className="border p-2">{user.nid || "N/A"}</td>
+                    <td className="border p-2">
+                      {user.electionCenter || "N/A"}
+                    </td>
+                    <td className="border p-2">{user.country || "N/A"}</td>
                     <td className="border p-2">
                       <div className="flex justify-center gap-2">
                         <button

@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import Barcode from "react-barcode"; // Import Barcode library
+import Barcode from "react-barcode";
 import { FaDownload } from "react-icons/fa";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -38,7 +38,7 @@ const ProfileCard = () => {
     <div className="max-w-[700px] lg:mx-auto mx-4 my-10">
       <div
         ref={cardRef}
-        className="border px-6 py-4 bg-white rounded-lg border-black"
+        className="border px-6 py-4 bg-white rounded-lg border-black relative"
       >
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
@@ -124,6 +124,16 @@ const ProfileCard = () => {
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Decorative Paddy */}
+        {/* Decorative Paddy */}
+        <div className="absolute bottom-0 right-0 w-48 h-48 md:w-64 md:h-64 opacity-20 pointer-events-none">
+          <img
+            src="https://upload.wikimedia.org/wikipedia/commons/0/02/Bangladesh_Nationalist_Party_Election_Symbol.svg"
+            alt=""
+            className="w-full h-full object-contain"
+          />
         </div>
       </div>
 

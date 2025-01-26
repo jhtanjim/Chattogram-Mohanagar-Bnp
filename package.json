@@ -1,5 +1,6 @@
 {
   "name": "bnp-project_react",
+  "homepage": "http://bnpctg.com",
   "private": true,
   "version": "0.0.0",
   "type": "module",

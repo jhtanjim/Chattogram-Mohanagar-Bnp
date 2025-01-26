@@ -239,7 +239,7 @@ const SignUp = () => {
         {/* Country */}
         <div>
           <label htmlFor="country" className="mb-3 block">
-            দেশ
+            স্থানীয় নেতার নাম
           </label>
           <input
             type="text"
@@ -247,13 +247,13 @@ const SignUp = () => {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            placeholder="দেশ লিখুন"
+            placeholder="স্থানীয় নেতার নাম"
             className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
           />
         </div>
 
         {/* Passwords */}
-        <div className="lg:flex gap-4">
+        <div className="lg:flex gap-4 my-4">
           <div className="mb-4 w-full">
             <label className="block text-sm font-semibold">পাসওয়ার্ড</label>
             <input
@@ -281,7 +281,6 @@ const SignUp = () => {
             />
           </div>
         </div>
-
         {/* Mobile and NID */}
         <div className="lg:flex gap-4">
           <div className="mb-4 w-full">
@@ -313,100 +312,104 @@ const SignUp = () => {
             />
           </div>
         </div>
-
-        {/* User Type */}
-        <div>
-          <label htmlFor="userType" className="mb-3 block">
-            পদবি
-          </label>
-          <select
-            id="userType"
-            name="userType"
-            value={formData.userType}
-            onChange={handleChange}
-            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
-          >
-            <option value="">পদবি নির্বাচন করুন</option>
-            {usertypes.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.name}
-              </option>
-            ))}
-          </select>
+        <div className="lg:flex gap-4 my-4">
+          {" "}
+          {/* User Type */}
+          <div className="lg:w-full">
+            <label htmlFor="userType" className="mb-3 block">
+              পদবি
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {usertypes.map((type) => (
+                <label key={type.value} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    id={type.value}
+                    name="userType"
+                    value={type.value}
+                    checked={formData.userType === type.value}
+                    onChange={handleChange}
+                    className="form-radio text-primary"
+                  />
+                  <span>{type.name}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="lg:w-full">
+            <label htmlFor="mohanagarCode" className="mb-3  block">
+              মহানগর
+            </label>
+            <select
+              name="mohanagarCode"
+              value={formData.mohanagarCode}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  mohanagarCode: e.target.value,
+                });
+                setSelectedMohanagar(e.target.value);
+              }}
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            >
+              <option value="">মহানগর নির্বাচন করুন</option>
+              {mohanagars.map((mohanagar) => (
+                <option key={mohanagar.id} value={mohanagar.id}>
+                  {mohanagar.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         {/* Location Fields (Mohanagar, Thana, Ward, Election Center) */}
-        <div>
-          <label htmlFor="mohanagarCode" className="mb-3 block">
-            মহানগর
-          </label>
-          <select
-            name="mohanagarCode"
-            value={formData.mohanagarCode}
-            onChange={(e) => {
-              setFormData({
-                ...formData,
-                mohanagarCode: e.target.value,
-              });
-              setSelectedMohanagar(e.target.value);
-            }}
-            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
-          >
-            <option value="">মহানগর নির্বাচন করুন</option>
-            {mohanagars.map((mohanagar) => (
-              <option key={mohanagar.id} value={mohanagar.id}>
-                {mohanagar.name}
-              </option>
-            ))}
-          </select>
-        </div>
+        <div className="lg:flex gap-4 my-4">
+          {/* Select Thana */}
+          <div className="w-full">
+            <label htmlFor="thanaCode" className="mb-3 block">
+              থানা নির্বাচন করুন
+            </label>
+            <select
+              name="thanaCode"
+              value={formData.thanaCode}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  thanaCode: e.target.value,
+                });
+                setSelectedThana(e.target.value);
+              }}
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            >
+              <option value="">থানা নির্বাচন করুন</option>
+              {thanas.map((thana) => (
+                <option key={thana.id} value={thana.id}>
+                  {thana.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Select Thana */}
-        <div>
-          <label htmlFor="thanaCode" className="mb-3 block">
-            থানা নির্বাচন করুন
-          </label>
-          <select
-            name="thanaCode"
-            value={formData.thanaCode}
-            onChange={(e) => {
-              setFormData({
-                ...formData,
-                thanaCode: e.target.value,
-              });
-              setSelectedThana(e.target.value);
-            }}
-            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
-          >
-            <option value="">থানা নির্বাচন করুন</option>
-            {thanas.map((thana) => (
-              <option key={thana.id} value={thana.id}>
-                {thana.name}
-              </option>
-            ))}
-          </select>
+          {/* Select Ward */}
+          <div className="w-full">
+            <label htmlFor="wardCode" className="mb-3 block">
+              ওয়ার্ড নির্বাচন করুন
+            </label>
+            <select
+              name="wardCode"
+              value={formData.wardCode}
+              onChange={handleChange}
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            >
+              <option value="">ওয়ার্ড নির্বাচন করুন</option>
+              {filteredWards.map((ward) => (
+                <option key={ward.id} value={ward.id}>
+                  {ward.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-
-        {/* Select Ward */}
-        <div>
-          <label htmlFor="wardCode" className="mb-3 block">
-            ওয়ার্ড নির্বাচন করুন
-          </label>
-          <select
-            name="wardCode"
-            value={formData.wardCode}
-            onChange={handleChange}
-            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
-          >
-            <option value="">ওয়ার্ড নির্বাচন করুন</option>
-            {filteredWards.map((ward) => (
-              <option key={ward.id} value={ward.id}>
-                {ward.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Election Center */}
         <div>
           <label htmlFor="electionCenter" className="mb-3 block">
@@ -463,6 +466,12 @@ const SignUp = () => {
             সাইন আপ করুন
           </button>
         </div>
+        <p className="py-4 text-center">
+          অ্যাকাউন্ট আছে?
+          <a href="/signIn" className="text-blue-800 font-semibold">
+            সাইন ইন করুন
+          </a>
+        </p>
       </form>
     </div>
   );
