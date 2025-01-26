@@ -97,14 +97,14 @@ const Navbar = () => {
           {isAuthenticated && isUserDataLoaded ? (
             <button
               onClick={logout}
-              className="block w-full md:w-auto text-center text-white p-2 rounded-xl bg-red-500 hover:text-green-900 font-medium transition duration-200 lg:hidden "
+              className="block w-full md:w-auto text-center text-white p-2 rounded-xl bg-red-500 hover:text-green-900 font-medium transition duration-200 lg:hidden md:hidden "
             >
               লগআউট
             </button>
           ) : (
             <Link
               to="/signIn"
-              className="block w-full text-center md:w-auto  hover:text-green-900 font-medium transition duration-200 lg:hidden bg-green-800 p-2 rounded-xl text-white"
+              className="block w-full text-center md:w-auto  hover:text-green-900 font-medium transition duration-200 lg:hidden md:hidden bg-green-800 p-2 rounded-xl text-white"
             >
               সাইন ইন
             </Link>
@@ -120,7 +120,7 @@ const Navbar = () => {
               </span>
               <button
                 onClick={logout}
-                className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md transition duration-200"
+                className="inline-flex items-center bg-red-500 hover:text-white hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md transition duration-200"
               >
                 <span className="mr-2">LOGOUT</span>
                 <svg

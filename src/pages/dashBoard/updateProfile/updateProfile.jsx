@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useUserData } from "../../../hooks/useUserData";
+import Swal from "sweetalert2";
 
 const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
   const { user } = useAuth();
@@ -76,42 +77,62 @@ const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
 
-    if (!id || !userToken) {
-      setError("User not authenticated. Please log in again.");
-      setIsLoading(false);
-      return;
-    }
+    Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "আপডেট করার আগে নিশ্চিত করুন!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "হ্যাঁ, আপডেট করুন!",
+      cancelButtonText: "বাতিল করুন",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        setIsLoading(true);
+        setError("");
 
-    try {
-      const response = await fetch(
-        `https://bnp-api-9oht.onrender.com/user/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userToken}`,
-          },
-          body: JSON.stringify({ ...formData, userId: id }),
+        if (!id || !userToken) {
+          setError("ব্যবহারকারী প্রমাণিত নয়। অনুগ্রহ করে আবার লগ ইন করুন।");
+          setIsLoading(false);
+          return;
         }
-      );
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to update profile");
+        try {
+          const response = await fetch(
+            `https://bnp-api-9oht.onrender.com/auth/${id}`,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${userToken}`,
+              },
+              body: JSON.stringify({ ...formData, userId: id }),
+            }
+          );
+
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(
+              errorData.message || "প্রোফাইল আপডেট করতে ব্যর্থ হয়েছে।"
+            );
+          }
+
+          const updatedUser = await response.json();
+          onUpdate(updatedUser);
+          Swal.fire("সফল!", "আপনার প্রোফাইল সফলভাবে আপডেট হয়েছে।", "success");
+          closeModal();
+        } catch (err) {
+          console.error("Error updating profile:", err);
+          setError(
+            err.message || "প্রোফাইল আপডেট করার সময় একটি সমস্যা হয়েছে।"
+          );
+          Swal.fire("ব্যর্থ!", "আপডেটের সময় একটি ত্রুটি ঘটেছে।", "error");
+        } finally {
+          setIsLoading(false);
+        }
       }
-
-      const updatedUser = await response.json();
-      onUpdate(updatedUser);
-      closeModal();
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      setError(err.message || "An error occurred while updating the profile.");
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
 
   return (
