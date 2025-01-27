@@ -218,7 +218,7 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="জন ডো"
               type="text"
-              className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+              className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
             />
           </div>
@@ -230,27 +230,13 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="abc@gmail.com"
               type="email"
-              className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+              className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
             />
           </div>
         </div>
 
         {/* Country */}
-        <div>
-          <label htmlFor="country" className="mb-3 block">
-            স্থানীয় নেতার নাম
-          </label>
-          <input
-            type="text"
-            id="country"
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            placeholder="স্থানীয় নেতার নাম"
-            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
-          />
-        </div>
 
         {/* Passwords */}
         <div className="lg:flex gap-4 my-4">
@@ -262,7 +248,7 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="••••••••"
               type="password"
-              className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+              className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
             />
           </div>
@@ -276,7 +262,7 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="••••••••"
               type="password"
-              className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+              className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
             />
           </div>
@@ -293,7 +279,7 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="মোবাইল নম্বর লিখুন"
               type="text"
-              className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+              className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
             />
           </div>
@@ -307,7 +293,7 @@ const SignUp = () => {
               onChange={handleChange}
               placeholder="এনআইডি নাম্বার লিখুন"
               type="text"
-              className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+              className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
             />
           </div>
@@ -317,7 +303,7 @@ const SignUp = () => {
           {/* User Type */}
           <div className="lg:w-full">
             <label htmlFor="userType" className="mb-3 block">
-              পদবি
+              সংগঠন
             </label>
             <div className="flex flex-wrap gap-4">
               {usertypes.map((type) => (
@@ -338,7 +324,7 @@ const SignUp = () => {
           </div>
           <div className="lg:w-full">
             <label htmlFor="mohanagarCode" className="mb-3  block">
-              মহানগর
+              সাংগঠনিক ইউনিট
             </label>
             <select
               name="mohanagarCode"
@@ -425,7 +411,20 @@ const SignUp = () => {
             className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
           />
         </div>
-
+        <div>
+          <label htmlFor="country" className="mb-3 block">
+            স্থানীয় নেতার নাম
+          </label>
+          <input
+            type="text"
+            id="country"
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            placeholder="স্থানীয় নেতার নাম"
+            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+          />
+        </div>
         {/* Image Upload */}
         <div>
           <label htmlFor="image" className="mb-3 block">
@@ -450,7 +449,7 @@ const SignUp = () => {
             value={capVal}
             onChange={(e) => setCapVal(e.target.value)}
             placeholder="Answer"
-            className="border shadow-lg rounded-2xl w-full px-4 py-3 mt-2"
+            className="border  rounded-2xl w-full px-4 py-3 mt-2"
             required
           />
         </div>
