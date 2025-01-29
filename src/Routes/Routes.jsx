@@ -9,6 +9,9 @@ import ProfileCard from "../pages/dashBoard/profileCard/profileCard";
 import ApproveList from "../pages/dashBoard/approveList/approveList";
 import Elections from "../pages/dashBoard/elections/elections";
 import ElectionDetail from "../pages/dashBoard/elections/electionDetail";
+import MessageSend from "../pages/dashBoard/messageSend/messageSend";
+import CandiDate from "../pages/dashBoard/candiDate/candiDate";
+import About from "../pages/Shared/about/about";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -17,6 +20,10 @@ export const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+      },
+      {
+        path: "/about",
+        element: <About />,
       },
       {
         path: "/signIn",
@@ -49,6 +56,14 @@ export const router = createBrowserRouter([
       {
         path: "/elections/:id",
         element: <ElectionDetail />,
+      },
+      {
+        path: "/messageSend",
+        element: <MessageSend />,
+      },
+      {
+        path: "/candiDate",
+        element: <CandiDate />,
       },
     ],
   },

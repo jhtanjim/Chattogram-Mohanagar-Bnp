@@ -80,12 +80,12 @@ const Navbar = () => {
           >
             নোটিশ
           </Link>
-          <Link
+          {/* <Link
             to="/resources"
             className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
           >
             রিসোর্স
-          </Link>
+          </Link> */}
           {isAuthenticated && (
             <Link
               to="/dashBoard"

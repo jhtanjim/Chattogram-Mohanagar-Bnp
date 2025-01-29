@@ -1,5 +1,4 @@
-"use client";
-import React, { useState } from "react";
+import { useState } from "react";
 
 const MessageSend = () => {
   const [selected, setSelected] = useState("ward");
