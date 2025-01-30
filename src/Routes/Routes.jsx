@@ -12,6 +12,8 @@ import ElectionDetail from "../pages/dashBoard/elections/electionDetail";
 import MessageSend from "../pages/dashBoard/messageSend/messageSend";
 import CandiDate from "../pages/dashBoard/candiDate/candiDate";
 import About from "../pages/Shared/about/about";
+import NoticeBoard from "../pages/Shared/noticeBoard/noticeBoard";
+import Video from "../pages/Shared/video/video";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -64,6 +66,14 @@ export const router = createBrowserRouter([
       {
         path: "/candiDate",
         element: <CandiDate />,
+      },
+      {
+        path: "/noticeBoard",
+        element: <NoticeBoard />,
+      },
+      {
+        path: "/video",
+        element: <Video />,
       },
     ],
   },
