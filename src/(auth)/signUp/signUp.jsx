@@ -413,7 +413,7 @@ const SignUp = () => {
         </div>
         <div>
           <label htmlFor="country" className="mb-3 block">
-            স্থানীয় নেতার নাম
+            স্থানীয় নেতার নাম, যিনি আপনাকে চিনে
           </label>
           <input
             type="text"
@@ -421,7 +421,8 @@ const SignUp = () => {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            placeholder="স্থানীয় নেতার নাম"
+            placeholder="স্থানীয় নেতার নাম, যিনি আপনাকে চিনে
+"
             className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
           />
         </div>

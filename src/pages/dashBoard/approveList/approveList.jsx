@@ -35,7 +35,7 @@ const ApproveList = () => {
     }
   };
 
-  const approveUser = async (userId) => {
+  const approveUser = async (userId, userImage) => {
     // Show confirmation dialog
     const result = await Swal.fire({
       title: "আপনি কি নিশ্চিত?",
@@ -44,6 +44,9 @@ const ApproveList = () => {
       showCancelButton: true,
       confirmButtonColor: "#28a745",
       cancelButtonColor: "#d33",
+      imageUrl: userImage || "https://via.placeholder.com/150", // Default image if user image is missing
+      imageWidth: 80, // Adjust image width
+      imageHeight: 80, // Adjust image height
       confirmButtonText: "হ্যাঁ, অনুমোদন করুন",
       cancelButtonText: "না",
     });
@@ -64,11 +67,14 @@ const ApproveList = () => {
         );
 
         if (response.ok) {
-          // Show success alert
+          // Show success alert with user's image
           Swal.fire({
             icon: "success",
             title: "সফল!",
             text: "ব্যবহারকারী অনুমোদিত হয়েছে।",
+            imageUrl: userImage || "https://via.placeholder.com/150", // Default image if user image is missing
+            imageWidth: 100,
+            imageHeight: 100,
             confirmButtonColor: "#28a745",
           });
 
@@ -136,7 +142,7 @@ const ApproveList = () => {
                     <td className="border p-2">
                       <div className="flex justify-center gap-2">
                         <button
-                          onClick={() => approveUser(user.id)}
+                          onClick={() => approveUser(user.id, user.image)} // Pass user.image
                           className={`px-4 py-1 text-sm rounded ${
                             approvingUserId === user.id
                               ? "bg-gray-400"
@@ -148,6 +154,7 @@ const ApproveList = () => {
                             ? "Approving..."
                             : "অনুমোদন"}
                         </button>
+
                         {/* <button className="px-4 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded">
                           বাতিল
                         </button> */}
