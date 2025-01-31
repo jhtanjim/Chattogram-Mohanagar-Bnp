@@ -44,7 +44,7 @@ const SignIn = () => {
           confirmButtonColor: "#16A34A",
         });
         login(result.token, result.user); // Log in the user using the context's login method
-        navigate("/"); // Navigate to the home page
+        navigate("/dashBoard"); // Navigate to the home page
       } else {
         Swal.fire({
           icon: "error",

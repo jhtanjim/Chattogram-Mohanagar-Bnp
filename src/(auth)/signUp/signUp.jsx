@@ -172,7 +172,7 @@ const SignUp = () => {
           login(result.token, result.user);
 
           // Redirect after successful signup
-          navigate("/");
+          navigate("/dashBoard");
         });
 
         console.log("Form submitted successfully:", result);

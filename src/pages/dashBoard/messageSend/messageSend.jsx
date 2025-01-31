@@ -1,69 +1,127 @@
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const MessageSend = () => {
-  const [selected, setSelected] = useState("ward");
+  const [selected, setSelected] = useState("");
+  const [message, setMessage] = useState("");
+  const [title, setTitle] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const userToken = localStorage.getItem("token");
+  console.log("User Token:", userToken);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message || !title) {
+      setError("সব তথ্য পূরণ করুন");
+      Swal.fire({
+        icon: "error",
+        title: "ত্রুটি!",
+        text: "সব তথ্য পূরণ করুন",
+      });
+      return;
+    }
+    setLoading(true);
+    setError(null);
+
+    const NoticeType = {
+      groupType: selected,
+      title,
+      message,
+    };
+
+    console.log("NoticeType being sent:", NoticeType);
+
+    try {
+      const response = await fetch(
+        "https://bnp-api-9oht.onrender.com/notices",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify(NoticeType),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "বার্তা পাঠাতে ব্যর্থ হয়েছে");
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "সফল!",
+        text: "বার্তা সফলভাবে পাঠানো হয়েছে!",
+      });
+
+      setMessage("");
+      setTitle("");
+    } catch (err) {
+      setError(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "ত্রুটি!",
+        text: err.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="max-w-md mx-auto p-6 my-20 bg-white rounded-md">
       <h3 className="text-lg font-semibold text-green-600 mb-4 text-center">
         সদস্যকে আপনার বার্তা পাঠান
       </h3>
-      <div className="flex justify-center space-x-4 mb-4">
-        <label className="flex items-center cursor-pointer">
-          <input
-            type="radio"
-            name="type"
-            value="ward"
-            checked={selected === "ward"}
-            onChange={() => setSelected("ward")}
-            className="hidden"
-          />
-          <span
-            className={`px-4 py-2 rounded-full ${
-              selected === "ward"
-                ? "bg-green-600 text-white"
-                : "bg-yellow-500 text-gray-600"
-            }`}
-          >
-            ওয়ার্ড
-          </span>
-        </label>
-        <label className="flex items-center cursor-pointer">
-          <input
-            type="radio"
-            name="type"
-            value="thana"
-            checked={selected === "thana"}
-            onChange={() => setSelected("thana")}
-            className="hidden"
-          />
-          <span
-            className={`px-4 py-2 rounded-full ${
-              selected === "thana"
-                ? "bg-green-600 text-white"
-                : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            থানার
-          </span>
-        </label>
-      </div>
-      <select className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
-        <option value="">ওয়ার্ড নির্বাচন করুন</option>
-        <option value="1">ওয়ার্ড ১</option>
-        <option value="2">ওয়ার্ড ২</option>
-      </select>
-      <textarea
-        placeholder="আপনার বার্তা লিখুন..."
-        className="w-full p-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-        rows="4"
-      />
-      <button className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700">
-        পাঠান
-      </button>
-      <p className="mt-4 text-sm text-center text-red-500">
-        অনুমোদনের পর, বার্তাটি ব্যবহারকারীকে পাঠানো হবে।
-      </p>
+      <form onSubmit={handleSubmit}>
+        <div className="flex justify-center space-x-4 mb-4">
+          {["WARD", "THANA", "MOHANAGAR"].map((type) => (
+            <label key={type} className="flex items-center cursor-pointer">
+              <input
+                type="radio"
+                name="type"
+                value={type}
+                checked={selected === type}
+                onChange={() => setSelected(type)}
+                className="hidden"
+              />
+              <span
+                className={`px-4 py-2 rounded-full ${
+                  selected === type
+                    ? "bg-green-600 text-white"
+                    : "bg-gray-200 text-gray-600"
+                }`}
+              >
+                {type}
+              </span>
+            </label>
+          ))}
+        </div>
+        <input
+          type="text"
+          placeholder="শিরোনাম লিখুন..."
+          className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
+        <textarea
+          placeholder="আপনার বার্তা লিখুন..."
+          className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+          rows="4"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <button
+          type="submit"
+          className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
+          disabled={loading}
+        >
+          {loading ? "পাঠানো হচ্ছে..." : "পাঠান"}
+        </button>
+      </form>
     </div>
   );
 };
