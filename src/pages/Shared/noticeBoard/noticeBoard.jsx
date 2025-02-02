@@ -64,7 +64,7 @@ const NoticeBoard = () => {
   }
 
   return (
-    <div className="my-20">
+    <div className="my-20 max-w-screen-2xl lg:mx-auto mx-4">
       <h1 className="font-bold text-xl text-center mb-4">নোটিশ বোর্ড</h1>
 
       {/* Board Wrapper */}

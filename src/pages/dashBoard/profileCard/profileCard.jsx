@@ -51,7 +51,7 @@ const ProfileCard = () => {
             />
           </div>
 
-          <h1 className="lg:text-xl md:text-3xl font-bold text-red-700 text-center">
+          <h1 className="lg:text-3xl md:text-3xl font-bold text-red-700 text-center">
             বাংলাদেশ জাতীয়তাবাদী দল
           </h1>
 
@@ -94,15 +94,15 @@ const ProfileCard = () => {
               <span>: {userData.fullName || "N/A"}</span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
-              <span className="min-w-[100px]">সদস্য ধরণ</span>
+              <span className="min-w-[100px]">সদস্য ধরন</span>
               <span className="text-green-600">
-                : {userData.userType || "N/A"}
+                {/* : {userData.userType || "N/A"} */}: সাধারণ সদস্য
               </span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">ইউনিট</span>
               <span className="text-red-600">
-                : {userData.mohanagar || "N/A"}
+                {/* : {userData.mohanagar || "N/A"} */}: চট্টগ্রাম মহানগর
               </span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">

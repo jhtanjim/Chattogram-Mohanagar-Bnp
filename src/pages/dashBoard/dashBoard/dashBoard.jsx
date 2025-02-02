@@ -3,6 +3,7 @@ import { MdHowToVote, MdMessage, MdOutlineApproval } from "react-icons/md";
 import { AiFillLike, AiOutlineMessage } from "react-icons/ai";
 import { useUserData } from "../../../hooks/useUserData";
 import { Link } from "react-router-dom";
+import { FaPeopleGroup, FaPerson } from "react-icons/fa6";
 
 const DashBoard = () => {
   const { userData, loading, error, isVerifier } = useUserData();
@@ -53,29 +54,32 @@ const DashBoard = () => {
           <h1 className="text-4xl font-bold">বিজ্ঞপ্তি দেখুন</h1>
         </Link>
         {/* card 4 */}
-        <Link
-          to="/messageSend"
-          className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
-        >
-          <AiOutlineMessage className="text-6xl mx-auto" />
-          <h1 className="text-4xl font-bold">বার্তা পাঠান</h1>
-        </Link>
+        {isVerifier && (
+          <Link
+            to="/messageSend"
+            className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
+          >
+            <AiOutlineMessage className="text-6xl mx-auto" />
+            <h1 className="text-4xl font-bold">বার্তা পাঠান</h1>
+          </Link>
+        )}
+
         {/* card 5 */}
-        <Link
+        {/* <Link
           to="/elections"
           className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
         >
           <AiFillLike className="text-6xl mx-auto" />
           <h1 className="text-4xl font-bold">ভোট দিন</h1>
-        </Link>
+        </Link> */}
         {/* card 6 */}
-        <Link
+        {/* <Link
           to="/candiDate"
           className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
         >
           <MdHowToVote className="text-6xl mx-auto" />
           <h1 className="text-4xl font-bold">প্রার্থী হন</h1>
-        </Link>
+        </Link> */}
         {/* card 7: Conditional Rendering */}
         {isVerifier && (
           <Link
@@ -86,6 +90,13 @@ const DashBoard = () => {
             <h1 className="text-4xl font-bold">সদস্য অনুমোদন</h1>
           </Link>
         )}
+        <Link
+          to="/asfa"
+          className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
+        >
+          <FaPeopleGroup className="text-6xl mx-auto" />
+          <h1 className="text-4xl font-bold">আমাদের সম্পর্কে</h1>
+        </Link>
       </div>
     </div>
   );

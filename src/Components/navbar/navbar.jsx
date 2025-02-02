@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
-// Replace with actual hooks or functions for authentication and user data
 import { useAuth } from "../../contexts/AuthContext.jsx";
-import { useUserData } from "../..//hooks/useUserData";
+import { useUserData } from "../../hooks/useUserData";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -18,7 +17,11 @@ const Navbar = () => {
   }, [userData]);
 
   const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
+    setMenuOpen((prev) => !prev);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
   };
 
   return (
@@ -58,45 +61,49 @@ const Navbar = () => {
         >
           <Link
             to="/"
+            onClick={closeMenu} // Close menu when clicking a link
             className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
           >
             হোম
           </Link>
           <Link
             to="/about"
+            onClick={closeMenu}
             className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
           >
             আমাদের সম্পর্কে
           </Link>
           <Link
             to="/video"
+            onClick={closeMenu}
             className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
           >
             ভিডিও
           </Link>
           <Link
             to="/noticeBoard"
+            onClick={closeMenu}
             className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
           >
             নোটিশ
           </Link>
-          {/* <Link
-            to="/resources"
-            className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
-          >
-            রিসোর্স
-          </Link> */}
+
           {isAuthenticated && (
             <Link
               to="/dashBoard"
+              onClick={closeMenu}
               className="block w-full md:w-auto text-green-800 hover:text-green-900 font-medium transition duration-200"
             >
               ড্যাশবোর্ড
             </Link>
           )}
+
           {isAuthenticated && isUserDataLoaded ? (
             <button
-              onClick={logout}
+              onClick={() => {
+                logout();
+                closeMenu();
+              }}
               className="block w-full md:w-auto text-center text-white p-2 rounded-xl bg-red-500 hover:text-green-900 font-medium transition duration-200 lg:hidden md:hidden "
             >
               লগআউট
@@ -104,7 +111,8 @@ const Navbar = () => {
           ) : (
             <Link
               to="/signIn"
-              className="block w-full text-center md:w-auto  hover:text-green-900 font-medium transition duration-200 lg:hidden md:hidden bg-green-800 p-2 rounded-xl text-white"
+              onClick={closeMenu}
+              className="block w-full text-center md:w-auto hover:text-green-900 font-medium transition duration-200 lg:hidden md:hidden bg-green-800 p-2 rounded-xl text-white"
             >
               সাইন ইন
             </Link>

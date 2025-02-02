@@ -27,7 +27,7 @@ const Footer = () => {
           <h2 className="font-bold text-lg">ঠিকানা</h2>
           <p className="text-sm">নসিমন ভবন, কাজীর দেউড়ী, চট্টগ্রাম 4000</p>
           <h2 className="font-bold text-lg mt-4">ইমেইল</h2>
-          <p className="text-sm">info@gmail.com</p>
+          <p className="text-sm">bnpchittagongcity@gmail.com</p>
           <h2 className="font-bold text-lg mt-4">যোগাযোগ</h2>
           <p className="text-sm">+৮৯০১৬</p>
         </div>

@@ -53,7 +53,7 @@ const MyProfile = () => {
             <InfoRow label="ফোন নম্বর" value={userData.mobile} />
             <InfoRow label="এনআইডি নম্বর" value={userData.nid} />
             <InfoRow label="জন্ম তারিখ" value={userData.birthDate} />
-            <InfoRow label="রাজনৈতিক পদবি" value={userData.userType} />
+            <InfoRow label="সংগঠন / অঙ্গসংগঠন" value={userData.userType} />
             <InfoRow label="ওয়ার্ড" value={userData.ward} />
             <InfoRow label="থানা" value={userData.thana} />
             <InfoRow label="মহানগর" value={userData.mohanagar} />

@@ -39,7 +39,7 @@ const SignUp = () => {
     thanaCode: "",
     wardCode: "",
     electionCenter: "",
-    userType: "",
+    userType: "BNP",
     nid: "",
   });
 
@@ -48,6 +48,9 @@ const SignUp = () => {
     { name: "CHATRODOL", value: "CHATRODOL" },
     { name: "JUBODOL", value: "JUBODOL" },
   ];
+  useEffect(() => {
+    setFormData((prev) => ({ ...prev, userType: "BNP" }));
+  }, []);
 
   // Fetching data
   useEffect(() => {
@@ -92,12 +95,25 @@ const SignUp = () => {
   };
 
   // Handle file upload for image
+  // Handle file upload for image
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-    setFormData({
-      ...formData,
-      image: file,
-    });
+
+    if (file) {
+      if (file.size > 20 * 1024) {
+        Swal.fire({
+          title: "ত্রুটি",
+          text: "ছবির আকার 20KB এর বেশি হতে পারবে না।",
+          icon: "error",
+        });
+        return;
+      }
+
+      setFormData({
+        ...formData,
+        image: file,
+      });
+    }
   };
 
   // Handle submit
