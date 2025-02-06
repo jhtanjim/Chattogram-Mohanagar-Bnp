@@ -78,21 +78,19 @@ const NoticeBoard = () => {
               {/* Card 1 */}
               <div className="border border-black w-full lg:w-[25%] bg-[#DCFCE7] p-4 flex items-center justify-center min-w-[200px]">
                 <h1 className="text-lg font-semibold">
-                  {notice.title || "অ্যাডমিন"}
+                  {notice.author || "অ্যাডমিন"}
                 </h1>
               </div>
               {/* Card 2 */}
               <div className="border border-black w-full lg:w-[50%] bg-[#DCFCE7] p-4 flex items-center justify-center min-w-[300px]">
                 <p className="text-start text-sm font-semibold">
-                  {notice.message ||
+                  {notice.title ||
                     "লোরেম ইপসাম ডোলর সিট আমেট কনসেকটেটুর adipisicing এলিট।"}
                 </p>
               </div>
               {/* Card 3 */}
               <div className="border border-black w-full lg:w-[25%] bg-[#DCFCE7] p-4 flex items-center justify-center min-w-[200px]">
-                <h1 className="text-lg font-semibold">
-                  {notice.groupType || "অ্যাডমিন"}
-                </h1>
+                <h1 className="text-lg font-semibold">{notice.message}</h1>
               </div>
             </div>
           ))

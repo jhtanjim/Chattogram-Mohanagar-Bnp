@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useUserData } from "../../../hooks/useUserData";
@@ -12,6 +14,7 @@ const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
   const [mohanagars, setMohanagars] = useState([]);
   const [thanas, setThanas] = useState([]);
   const [wards, setWards] = useState([]);
+  const [electionCenters, setElectionCenters] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [userToken, setUserToken] = useState(
@@ -26,21 +29,26 @@ const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
 
     const fetchLocationData = async () => {
       try {
-        const [mohanagarsData, thanasData, wardsData] = await Promise.all([
-          fetch("https://bnp-api-9oht.onrender.com/location/mohanagar").then(
-            (res) => res.json()
-          ),
-          fetch("https://bnp-api-9oht.onrender.com/location/thana").then(
-            (res) => res.json()
-          ),
-          fetch("https://bnp-api-9oht.onrender.com/location/ward").then((res) =>
-            res.json()
-          ),
-        ]);
+        const [mohanagarsData, thanasData, wardsData, electionCentersData] =
+          await Promise.all([
+            fetch("https://bnp-api-9oht.onrender.com/location/mohanagar").then(
+              (res) => res.json()
+            ),
+            fetch("https://bnp-api-9oht.onrender.com/location/thana").then(
+              (res) => res.json()
+            ),
+            fetch("https://bnp-api-9oht.onrender.com/location/ward").then(
+              (res) => res.json()
+            ),
+            fetch(
+              "https://bnp-api-9oht.onrender.com/location/electionCenter"
+            ).then((res) => res.json()),
+          ]);
 
         setMohanagars(mohanagarsData);
         setThanas(thanasData);
         setWards(wardsData);
+        setElectionCenters(electionCentersData);
       } catch (err) {
         console.error("Error fetching location data:", err);
         setError("Failed to load location data. Please try again.");
@@ -225,7 +233,7 @@ const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
                     key={option.id || option.value}
                     value={option.id || option.value}
                   >
-                    {option.name}
+                    {option.name || option.nameBangla}
                   </option>
                 ))}
               </select>
@@ -239,14 +247,20 @@ const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
             >
               নির্বাচনী কেন্দ্র
             </label>
-            <input
-              type="text"
+            <select
               name="electionCenter"
               id="electionCenter"
               value={formData.electionCenter || ""}
               onChange={handleChange}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            />
+            >
+              <option value="">নির্বাচনী কেন্দ্র নির্বাচন করুন</option>
+              {electionCenters.map((center) => (
+                <option key={center.id} value={center.id}>
+                  {center.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 

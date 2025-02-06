@@ -1,32 +1,50 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { useUserData } from "../../../hooks/useUserData";
 
 const ApproveList = () => {
   const [users, setUsers] = useState([]);
   const [approvingUserId, setApprovingUserId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 10;
-  const [userToken, setUserToken] = useState();
-  // const userToken = localStorage.getItem("token");
-  // console.log(userToken);
-  // Calculate total pages based on fetched data length and usersPerPage
   const totalPages = Math.ceil(users.length / usersPerPage);
+  const { isVerifier, isThanaVerifier } = useUserData();
+  const [userToken, setUserToken] = useState("");
 
   useEffect(() => {
-    fetchUsers();
-    const userToken = localStorage.getItem("token");
-    setUserToken(userToken);
+    const token = localStorage.getItem("token");
+    setUserToken(token || "");
   }, []);
 
+  useEffect(() => {
+    if (userToken && (isVerifier || isThanaVerifier)) {
+      fetchUsers();
+    }
+  }, [userToken, isVerifier, isThanaVerifier]); // Fetch users when roles and token are ready
+
   const fetchUsers = async () => {
+    if (!userToken) return;
+
     try {
-      const response = await fetch("https://bnp-api-9oht.onrender.com/user");
+      const endpoint = isVerifier
+        ? "https://bnp-api-9oht.onrender.com/user/unverified"
+        : isThanaVerifier
+        ? "https://bnp-api-9oht.onrender.com/user/unapproved"
+        : null;
+
+      if (!endpoint) return;
+
+      const response = await fetch(endpoint, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
       const data = await response.json();
+
       if (response.ok) {
-        const unverifiedUsers = data.users.filter(
-          (user) => user.isVerified === false
-        );
-        setUsers(unverifiedUsers);
+        setUsers(data.users);
       } else {
         console.error("Failed to fetch users");
       }
@@ -36,7 +54,6 @@ const ApproveList = () => {
   };
 
   const approveUser = async (userId, userImage) => {
-    // Show confirmation dialog
     const result = await Swal.fire({
       title: "আপনি কি নিশ্চিত?",
       text: "এই ব্যবহারকারীকে অনুমোদন করতে চান?",
@@ -44,9 +61,9 @@ const ApproveList = () => {
       showCancelButton: true,
       confirmButtonColor: "#28a745",
       cancelButtonColor: "#d33",
-      imageUrl: userImage || "https://via.placeholder.com/150", // Default image if user image is missing
-      imageWidth: 80, // Adjust image width
-      imageHeight: 80, // Adjust image height
+      imageUrl: userImage || "https://via.placeholder.com/150",
+      imageWidth: 80,
+      imageHeight: 80,
       confirmButtonText: "হ্যাঁ, অনুমোদন করুন",
       cancelButtonText: "না",
     });
@@ -54,31 +71,34 @@ const ApproveList = () => {
     if (result.isConfirmed) {
       setApprovingUserId(userId);
       try {
-        const response = await fetch(
-          `https://bnp-api-9oht.onrender.com/user/${userId}/verify`,
-          {
-            method: "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${userToken}`,
-            },
-            body: JSON.stringify({ isVerified: true }),
-          }
-        );
+        const endpoint = isVerifier
+          ? `https://bnp-api-9oht.onrender.com/user/${userId}/verify`
+          : isThanaVerifier
+          ? `https://bnp-api-9oht.onrender.com/user/${userId}/approve`
+          : null;
+
+        if (!endpoint) return;
+
+        const response = await fetch(endpoint, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify({ isVerified: true }),
+        });
 
         if (response.ok) {
-          // Show success alert with user's image
           Swal.fire({
             icon: "success",
             title: "সফল!",
             text: "ব্যবহারকারী অনুমোদিত হয়েছে।",
-            imageUrl: userImage || "https://via.placeholder.com/150", // Default image if user image is missing
+            imageUrl: userImage || "https://via.placeholder.com/150",
             imageWidth: 100,
             imageHeight: 100,
             confirmButtonColor: "#28a745",
           });
 
-          // Update the local state to reflect the change
           setUsers(users.filter((user) => user.id !== userId));
         } else {
           const errorData = await response.json();
@@ -87,7 +107,6 @@ const ApproveList = () => {
       } catch (error) {
         console.error("Error approving user:", error);
 
-        // Show error alert
         Swal.fire({
           icon: "error",
           title: "ব্যর্থ!",
@@ -104,7 +123,6 @@ const ApproveList = () => {
     setCurrentPage(pageNumber);
   };
 
-  // Pagination: slice users to show only the current page's users
   const currentUsers = users.slice(
     (currentPage - 1) * usersPerPage,
     currentPage * usersPerPage
@@ -125,8 +143,8 @@ const ApproveList = () => {
                 <tr>
                   <th className="text-center border p-2">নাম</th>
                   <th className="text-center border p-2">মোবাইল</th>
-                  <th className="text-center border p-2">কেন্দ্রের নাম,</th>
-                  <th className="text-center border p-2">স্থানীয় নেতার নাম</th>
+                  <th className="text-center border p-2">কেন্দ্রের নাম</th>
+                  <th className="text-center border p-2">স্থানীয় নেতার নাম</th>
                   <th className="text-center border p-2">অনুমোদন</th>
                 </tr>
               </thead>
@@ -142,7 +160,7 @@ const ApproveList = () => {
                     <td className="border p-2">
                       <div className="flex justify-center gap-2">
                         <button
-                          onClick={() => approveUser(user.id, user.image)} // Pass user.image
+                          onClick={() => approveUser(user.id, user.image)}
                           className={`px-4 py-1 text-sm rounded ${
                             approvingUserId === user.id
                               ? "bg-gray-400"
@@ -154,10 +172,6 @@ const ApproveList = () => {
                             ? "Approving..."
                             : "অনুমোদন"}
                         </button>
-
-                        {/* <button className="px-4 py-1 text-sm bg-red-500 hover:bg-red-600 text-white rounded">
-                          বাতিল
-                        </button> */}
                       </div>
                     </td>
                   </tr>

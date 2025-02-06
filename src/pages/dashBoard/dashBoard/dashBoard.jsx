@@ -6,13 +6,14 @@ import { Link } from "react-router-dom";
 import { FaPeopleGroup, FaPerson } from "react-icons/fa6";
 
 const DashBoard = () => {
-  const { userData, loading, error, isVerifier } = useUserData();
+  const { userData, loading, error, isVerifier, isThanaVerifier } =
+    useUserData();
   console.log(userData);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
   // Show waiting screen if user is not verified
-  if (!userData?.isVerified) {
+  if (!userData?.isApproved) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <h2 className="text-2xl font-semibold text-center text-gray-800">
@@ -54,7 +55,7 @@ const DashBoard = () => {
           <h1 className="text-4xl font-bold">বিজ্ঞপ্তি দেখুন</h1>
         </Link>
         {/* card 4 */}
-        {isVerifier && (
+        {(isVerifier || isThanaVerifier) && (
           <Link
             to="/messageSend"
             className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
@@ -81,7 +82,7 @@ const DashBoard = () => {
           <h1 className="text-4xl font-bold">প্রার্থী হন</h1>
         </Link> */}
         {/* card 7: Conditional Rendering */}
-        {isVerifier && (
+        {(isVerifier || isThanaVerifier) && (
           <Link
             to="/approveList"
             className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"

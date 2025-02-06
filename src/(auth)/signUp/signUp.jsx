@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -9,8 +11,8 @@ const generateMathProblem = () => {
   const num2 = Math.floor(Math.random() * 10) + 1;
   const operator = Math.random() > 0.5 ? "+" : "*"; // Addition or Multiplication
 
-  let question = `${num1} ${operator} ${num2}`;
-  let solution = operator === "+" ? num1 + num2 : num1 * num2;
+  const question = `${num1} ${operator} ${num2}`;
+  const solution = operator === "+" ? num1 + num2 : num1 * num2;
 
   return { question, solution };
 };
@@ -26,22 +28,28 @@ const SignUp = () => {
   const [wards, setWards] = useState([]);
   const [selectedMohanagar, setSelectedMohanagar] = useState("");
   const [selectedThana, setSelectedThana] = useState("");
+  const [selectedelEctionCenter, setSelectedelEctionCenter] = useState("");
   const [filteredWards, setFilteredWards] = useState([]);
+  const [electionCenters, setElectionCenters] = useState([]);
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     mobile: "",
     password: "",
     confirmPassword: "",
-    country: "",
+    localReference: "",
     image: null,
-    mohanagarCode: "",
-    thanaCode: "",
-    wardCode: "",
-    electionCenter: "",
+    mohanagarId: "",
+    thanaId: "",
+    wardId: "",
+    electionCenterId: "",
     userType: "BNP",
     nid: "",
   });
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const usertypes = [
     { name: "BNP", value: "BNP" },
@@ -55,29 +63,66 @@ const SignUp = () => {
   // Fetching data
   useEffect(() => {
     const fetchLocationData = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const mohanagarsData = await fetch(
-          "https://bnp-api-9oht.onrender.com/location/mohanagar"
-        ).then((res) => res.json());
-        const thanasData = await fetch(
-          "https://bnp-api-9oht.onrender.com/location/thana"
-        ).then((res) => res.json());
-        const wardsData = await fetch(
-          "https://bnp-api-9oht.onrender.com/location/ward"
-        ).then((res) => res.json());
+        const endpoints = [
+          "https://bnp-api-9oht.onrender.com/location/mohanagar",
+          "https://bnp-api-9oht.onrender.com/location/thana",
+          "https://bnp-api-9oht.onrender.com/location/ward",
+          "https://bnp-api-9oht.onrender.com/location/electionCenter",
+        ];
+
+        const results = await Promise.all(
+          endpoints.map(async (endpoint) => {
+            try {
+              const response = await fetch(endpoint);
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+              return await response.json();
+            } catch (error) {
+              console.error(`Error fetching from ${endpoint}:`, error);
+              throw error;
+            }
+          })
+        );
+
+        const [mohanagarsData, thanasData, wardsData, electionCentersData] =
+          results;
 
         setMohanagars(mohanagarsData);
         setThanas(thanasData);
         setWards(wardsData);
+        setElectionCenters(electionCentersData);
+
+        console.log("Fetched data:", {
+          mohanagarsData,
+          thanasData,
+          wardsData,
+          electionCentersData,
+        });
       } catch (error) {
         console.error("Error fetching location data:", error);
+        setError(`Failed to fetch data: ${error.message}`);
+      } finally {
+        setIsLoading(false);
       }
     };
+
     fetchLocationData();
 
     // Generate math problem for captcha
     setMathProblem(generateMathProblem());
   }, []);
+
+  // Add these console logs after the existing useEffect
+  useEffect(() => {
+    console.log("Mohanagars:", mohanagars);
+    console.log("Thanas:", thanas);
+    console.log("Wards:", wards);
+    console.log("Election Centers:", electionCenters);
+  }, [mohanagars, thanas, wards, electionCenters]);
 
   // Filter wards based on selected thana
   useEffect(() => {
@@ -98,9 +143,8 @@ const SignUp = () => {
   // Handle file upload for image
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
-
     if (file) {
-      if (file.size > 20 * 1024) {
+      if (file.size > 3000 * 1024) {
         Swal.fire({
           title: "ত্রুটি",
           text: "ছবির আকার 20KB এর বেশি হতে পারবে না।",
@@ -108,7 +152,6 @@ const SignUp = () => {
         });
         return;
       }
-
       setFormData({
         ...formData,
         image: file,
@@ -141,7 +184,7 @@ const SignUp = () => {
     }
 
     // Validate CAPTCHA answer
-    if (parseInt(capVal) !== mathProblem.solution) {
+    if (Number.parseInt(capVal) !== mathProblem.solution) {
       Swal.fire({
         title: "ত্রুটি",
         text: "CAPTCHA সঠিক নয়!",
@@ -156,13 +199,13 @@ const SignUp = () => {
     data.append("email", formData.email);
     data.append("mobile", formData.mobile);
     data.append("password", formData.password);
-    data.append("country", formData.country);
-    data.append("mohanagarCode", formData.mohanagarCode);
-    data.append("thanaCode", formData.thanaCode);
-    data.append("wardCode", formData.wardCode);
-    data.append("electionCenter", formData.electionCenter);
+    data.append("localReference", formData.localReference);
+    data.append("mohanagarId", formData.mohanagarId);
+    data.append("thanaId", formData.thanaId);
+    data.append("wardId", formData.wardId);
+    data.append("electionCenterId", formData.electionCenterId);
     data.append("userType", formData.userType);
-    data.append("nid", formData.nid); // Add NID
+    data.append("nid", formData.nid);
     data.append("image", formData.image);
 
     try {
@@ -211,6 +254,14 @@ const SignUp = () => {
     }
   };
 
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="max-w-screen-2xl lg:mx-auto p-4 my-12">
       <div className="flex gap-4 items-center justify-center mb-6">
@@ -252,7 +303,7 @@ const SignUp = () => {
           </div>
         </div>
 
-        {/* Country */}
+        {/* localReference */}
 
         {/* Passwords */}
         <div className="lg:flex gap-4 my-4">
@@ -339,16 +390,16 @@ const SignUp = () => {
             </div>
           </div>
           <div className="lg:w-full">
-            <label htmlFor="mohanagarCode" className="mb-3  block">
+            <label htmlFor="mohanagarId" className="mb-3  block">
               সাংগঠনিক ইউনিট
             </label>
             <select
-              name="mohanagarCode"
-              value={formData.mohanagarCode}
+              name="mohanagarId"
+              value={formData.mohanagarId}
               onChange={(e) => {
                 setFormData({
                   ...formData,
-                  mohanagarCode: e.target.value,
+                  mohanagarId: e.target.value,
                 });
                 setSelectedMohanagar(e.target.value);
               }}
@@ -357,7 +408,7 @@ const SignUp = () => {
               <option value="">মহানগর নির্বাচন করুন</option>
               {mohanagars.map((mohanagar) => (
                 <option key={mohanagar.id} value={mohanagar.id}>
-                  {mohanagar.name}
+                  {mohanagar.nameBangla}
                 </option>
               ))}
             </select>
@@ -368,16 +419,16 @@ const SignUp = () => {
         <div className="lg:flex gap-4 my-4">
           {/* Select Thana */}
           <div className="w-full">
-            <label htmlFor="thanaCode" className="mb-3 block">
+            <label htmlFor="thanaId" className="mb-3 block">
               থানা নির্বাচন করুন
             </label>
             <select
-              name="thanaCode"
-              value={formData.thanaCode}
+              name="thanaId"
+              value={formData.thanaId}
               onChange={(e) => {
                 setFormData({
                   ...formData,
-                  thanaCode: e.target.value,
+                  thanaId: e.target.value,
                 });
                 setSelectedThana(e.target.value);
               }}
@@ -386,7 +437,7 @@ const SignUp = () => {
               <option value="">থানা নির্বাচন করুন</option>
               {thanas.map((thana) => (
                 <option key={thana.id} value={thana.id}>
-                  {thana.name}
+                  {thana.nameBangla}
                 </option>
               ))}
             </select>
@@ -394,19 +445,19 @@ const SignUp = () => {
 
           {/* Select Ward */}
           <div className="w-full">
-            <label htmlFor="wardCode" className="mb-3 block">
+            <label htmlFor="wardId" className="mb-3 block">
               ওয়ার্ড নির্বাচন করুন
             </label>
             <select
-              name="wardCode"
-              value={formData.wardCode}
+              name="wardId"
+              value={formData.wardId}
               onChange={handleChange}
               className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
             >
               <option value="">ওয়ার্ড নির্বাচন করুন</option>
               {filteredWards.map((ward) => (
                 <option key={ward.id} value={ward.id}>
-                  {ward.name}
+                  {ward.nameBangla}
                 </option>
               ))}
             </select>
@@ -414,28 +465,40 @@ const SignUp = () => {
         </div>
         {/* Election Center */}
         <div>
-          <label htmlFor="electionCenter" className="mb-3 block">
-            নির্বাচনী কেন্দ্র
-          </label>
-          <input
-            type="text"
-            id="electionCenter"
-            name="electionCenter"
-            value={formData.electionCenter}
-            onChange={handleChange}
-            placeholder="কেন্দ্র নাম লিখুন"
-            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
-          />
+          <div className="w-full">
+            <label htmlFor="electionCenterId" className="mb-3 block">
+              নির্বাচনী কেন্দ্র
+            </label>
+            <select
+              name="electionCenterId"
+              value={formData.electionCenterId}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  electionCenterId: e.target.value,
+                });
+                setSelectedelEctionCenter(e.target.value);
+              }}
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            >
+              <option value="">নির্বাচনী কেন্দ্র নির্বাচন করুন</option>
+              {electionCenters.map((electionCenter) => (
+                <option key={electionCenter.id} value={electionCenter.id}>
+                  {electionCenter.name}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <div>
-          <label htmlFor="country" className="mb-3 block">
+          <label htmlFor="localReference" className="mb-3 block">
             স্থানীয় নেতার নাম, যিনি আপনাকে চিনে
           </label>
           <input
             type="text"
-            id="country"
-            name="country"
-            value={formData.country}
+            id="localReference"
+            name="localReference"
+            value={formData.localReference}
             onChange={handleChange}
             placeholder="স্থানীয় নেতার নাম, যিনি আপনাকে চিনে
 "
