@@ -10,7 +10,7 @@ const NoticeBoard = () => {
     const token = localStorage.getItem("token");
     console.log(token); // Check if token is available
     if (!token) {
-      setErrorMessage("Token not found. Please log in.");
+      setErrorMessage("User not found. Please log in.");
       setLoading(false);
       return;
     }

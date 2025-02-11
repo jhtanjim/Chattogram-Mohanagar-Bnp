@@ -31,6 +31,7 @@ const SignUp = () => {
   const [selectedelEctionCenter, setSelectedelEctionCenter] = useState("");
   const [filteredWards, setFilteredWards] = useState([]);
   const [electionCenters, setElectionCenters] = useState([]);
+  const [filteredElectionCenters, setFilteredElectionCenters] = useState([]);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -128,7 +129,17 @@ const SignUp = () => {
   useEffect(() => {
     const filtered = wards.filter((ward) => ward.thanaId === selectedThana);
     setFilteredWards(filtered);
-  }, [selectedThana, wards]);
+
+    // Filter election centers based on selected ward
+    if (formData.wardId) {
+      const filteredCenters = electionCenters.filter(
+        (center) => center.wardId === formData.wardId
+      );
+      setFilteredElectionCenters(filteredCenters);
+    } else {
+      setFilteredElectionCenters([]);
+    }
+  }, [selectedThana, wards, formData.wardId, electionCenters]);
 
   // Handle form input changes
   const handleChange = (e) => {
@@ -451,7 +462,20 @@ const SignUp = () => {
             <select
               name="wardId"
               value={formData.wardId}
-              onChange={handleChange}
+              onChange={(e) => {
+                const selectedWardId = e.target.value;
+                setFormData({
+                  ...formData,
+                  wardId: selectedWardId,
+                  electionCenterId: "", // Reset election center when ward changes
+                });
+
+                // Filter election centers based on selected ward
+                const filteredCenters = electionCenters.filter(
+                  (center) => center.wardId === selectedWardId
+                );
+                setFilteredElectionCenters(filteredCenters);
+              }}
               className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
             >
               <option value="">ওয়ার্ড নির্বাচন করুন</option>
@@ -482,7 +506,7 @@ const SignUp = () => {
               className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
             >
               <option value="">নির্বাচনী কেন্দ্র নির্বাচন করুন</option>
-              {electionCenters.map((electionCenter) => (
+              {filteredElectionCenters.map((electionCenter) => (
                 <option key={electionCenter.id} value={electionCenter.id}>
                   {electionCenter.name}
                 </option>

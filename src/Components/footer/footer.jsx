@@ -1,6 +1,52 @@
+import React from "react";
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  // Get today's date
+  const today = new Date();
+  const currentDay = today.getDate();
+  const currentMonth = today.getMonth(); // January is 0, February is 1, etc.
+  const currentYear = today.getFullYear();
+
+  // Create the calendar for the month
+  const getCalendar = () => {
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+    const lastDateOfMonth = new Date(
+      currentYear,
+      currentMonth + 1,
+      0
+    ).getDate();
+
+    const daysInMonth = [...Array(lastDateOfMonth)].map(
+      (_, index) => index + 1
+    );
+    const calendarRows = [];
+    let daysRow = Array(7).fill(null);
+
+    // Fill first row with the correct start day (e.g. if the 1st is a Tuesday, add empty cells until Tuesday)
+    let dayIndex = 0;
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      daysRow[i] = null;
+    }
+
+    // Fill the rest of the days
+    daysRow[firstDayOfMonth] = daysInMonth[dayIndex++];
+    calendarRows.push([...daysRow]);
+
+    // Continue filling the rest of the month
+    while (dayIndex < lastDateOfMonth) {
+      daysRow = Array(7).fill(null);
+      for (let i = 0; i < 7 && dayIndex < lastDateOfMonth; i++) {
+        daysRow[i] = daysInMonth[dayIndex++];
+      }
+      calendarRows.push([...daysRow]);
+    }
+
+    return calendarRows;
+  };
+
+  const calendarRows = getCalendar();
+
   return (
     <footer className="bg-green-600 py-6 px-4">
       <div className="max-w-screen-2xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
@@ -34,7 +80,7 @@ const Footer = () => {
 
         <div className="bg-white p-4 rounded-lg shadow-lg">
           <div className="text-center font-bold text-green-700 mb-2">
-            মার্চ ২০২৪
+            {currentMonth + 1} - {currentYear}
           </div>
           <table className="w-full text-center">
             <thead>
@@ -49,21 +95,20 @@ const Footer = () => {
               </tr>
             </thead>
             <tbody>
-              {[...Array(5)].map((_, weekIndex) => (
+              {calendarRows.map((week, weekIndex) => (
                 <tr key={weekIndex}>
-                  {[...Array(7)].map((_, dayIndex) => {
-                    const day = weekIndex * 7 + dayIndex - 4;
-                    return (
-                      <td
-                        key={dayIndex}
-                        className={`p-2 ${
-                          day === 0 || day > 31 ? "text-gray-400" : ""
-                        } ${dayIndex === 0 ? "text-red-600" : ""}`}
-                      >
-                        {day > 0 && day <= 31 ? day : ""}
-                      </td>
-                    );
-                  })}
+                  {week.map((day, dayIndex) => (
+                    <td
+                      key={dayIndex}
+                      className={`p-2 ${
+                        day === currentDay
+                          ? "bg-blue-500 text-white font-bold"
+                          : ""
+                      } ${!day ? "text-gray-400" : ""}`}
+                    >
+                      {day}
+                    </td>
+                  ))}
                 </tr>
               ))}
             </tbody>

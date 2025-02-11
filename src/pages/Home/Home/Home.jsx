@@ -1,12 +1,31 @@
-import React, { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { FaPlay, FaPause } from "react-icons/fa";
+
 import { FaSearch } from "react-icons/fa";
 import Video from "../../Shared/video/video";
-
+import audio from "../../../assets/song/prothom_bangladesh.mp3";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(""); // Manage search input
   const [searchResults, setSearchResults] = useState([]); // Manage search results
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
 
+  // Play music when component mounts
+  const toggleMusic = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current
+          .play()
+          .catch((error) => console.log("Play failed:", error));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
   const openModal = () => {
     setIsModalOpen(true);
   };
@@ -31,19 +50,60 @@ const Home = () => {
 
   return (
     <div>
-      {/* Banner */}
-      <div className="max-w-screen-2xl mx-4 my-4 rounded-2xl lg:mx-auto overflow-hidden">
-        {/* Carousel (simply a static section here for simplicity) */}
+      {/* Banner with Carousel */}
+      <div className="relative">
+        {/* Background Music (Hidden) */}
+        <audio ref={audioRef} src={audio} loop />
 
-        <div>
-          <img
-            src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
-            alt="খালেদা জিয়া"
-            className="w-full lg:h-[650px] object-cover"
-            width={1200}
-            height={650}
-          />
-        </div>
+        {/* Carousel */}
+        <Carousel autoPlay infiniteLoop showThumbs={false}>
+          <div>
+            <img
+              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
+              alt="খালেদা জিয়া"
+              className="w-full lg:h-[650px] object-cover"
+              width={1200}
+              height={650}
+            />
+          </div>
+          <div>
+            <img
+              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
+              alt="খালেদা জিয়া"
+              className="w-full lg:h-[650px] object-cover"
+              width={1200}
+              height={650}
+            />
+          </div>
+          <div>
+            <img
+              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
+              alt="খালেদা জিয়া"
+              className="w-full lg:h-[650px] object-cover"
+              width={1200}
+              height={650}
+            />
+          </div>
+          <div>
+            <img
+              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
+              alt="খালেদা জিয়া"
+              className="w-full lg:h-[650px] object-cover"
+              width={1200}
+              height={650}
+            />
+          </div>
+          {/* Add more slides here */}
+        </Carousel>
+
+        {/* Play Music Button */}
+
+        <button
+          onClick={toggleMusic}
+          className="absolute top-4 right-4 bg-green-500 bg-opacity-80 text-white p-4 rounded-full shadow-xl hover:bg-green-700 transition duration-300"
+        >
+          {isPlaying ? <FaPause size={24} /> : <FaPlay size={24} />}
+        </button>
       </div>
 
       {/* Search Bar */}

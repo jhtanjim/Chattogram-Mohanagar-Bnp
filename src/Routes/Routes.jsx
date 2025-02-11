@@ -15,6 +15,10 @@ import About from "../pages/Shared/about/about";
 import NoticeBoard from "../pages/Shared/noticeBoard/noticeBoard";
 import Video from "../pages/Shared/video/video";
 import UnderConstruction from "../Components/UnderConstruction/UnderConstruction";
+
+import ResetPass from "../pages/Shared/resetPass/resetPass";
+import forgetPass from "../pages/Shared/forgetPass/forgetPass";
+import ForgetPass from "../pages/Shared/forgetPass/forgetPass";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -75,6 +79,14 @@ export const router = createBrowserRouter([
       {
         path: "/video",
         element: <Video />,
+      },
+      {
+        path: "/forget-password",
+        element: <ForgetPass />,
+      },
+      {
+        path: "/reset-password",
+        element: <ResetPass />,
       },
       // Wildcard Route for Undefined Paths
 

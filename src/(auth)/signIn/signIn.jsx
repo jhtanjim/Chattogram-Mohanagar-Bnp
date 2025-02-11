@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
 
 const SignIn = () => {
-  const { login } = useAuth(); // Use the login function from the AuthContext
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -114,9 +114,13 @@ const SignIn = () => {
           লগইন করুন &rarr;
         </button>
         <p className="py-1">
-          <a href="#" className="text-green-800 font-semibold">
+          <Link
+            to="/forget-password
+"
+            className="text-green-800 font-semibold"
+          >
             পাসওয়ার্ড ভুলে গেছেন?
-          </a>
+          </Link>
         </p>
         <p className="py-4 text-center">
           অ্যাকাউন্ট নেই?
