@@ -6,11 +6,12 @@ import Video from "../../Shared/video/video";
 import audio from "../../../assets/song/prothom_bangladesh.mp3";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import PressRelease from "../../Shared/pressRelease/pressRelease";
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(""); // Manage search input
   const [searchResults, setSearchResults] = useState([]); // Manage search results
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const audioRef = useRef(null);
 
   // Play music when component mounts
@@ -226,7 +227,7 @@ const Home = () => {
       {/* Video Section */}
       <div className="max-w-screen-2xl mx-auto my-8 p-6 rounded-lg bg-white">
         {/* প্রেস রিলিজ বিভাগ */}
-        <div className="mt-10">
+        {/* <div className="mt-10">
           <h3 className="text-2xl text-center font-bold">প্রেস রিলিজ</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
             <div className="rounded-lg overflow-hidden shadow-lg">
@@ -270,6 +271,11 @@ const Home = () => {
               </p>
             </div>
           </div>
+        </div> */}
+        {/* প্রেস রিলিজ বিভাগ */}
+        <div className="mt-10">
+          <h3 className="text-2xl text-center font-bold">প্রেস রিলিজ</h3>
+          <PressRelease />
         </div>
       </div>
     </div>

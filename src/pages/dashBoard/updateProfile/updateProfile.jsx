@@ -1,62 +1,39 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../contexts/AuthContext";
-import { useUserData } from "../../../hooks/useUserData";
+import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useUserData } from "../../../hooks/useUserData";
 
-const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
-  const { user } = useAuth();
+const UpdateProfile = ({ refetch, closeModal }) => {
+  const navigate = useNavigate();
   const { userData } = useUserData();
-  const id = user?.id;
-
-  const [formData, setFormData] = useState(initialData || {});
   const [mohanagars, setMohanagars] = useState([]);
   const [thanas, setThanas] = useState([]);
   const [wards, setWards] = useState([]);
   const [electionCenters, setElectionCenters] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [userToken, setUserToken] = useState(
-    localStorage.getItem("token") || ""
-  );
+  const [filteredWards, setFilteredWards] = useState([]);
+  const [filteredElectionCenters, setFilteredElectionCenters] = useState([]);
+  const [selectedThana, setSelectedThana] = useState("");
+  // Call refetch whenever you want to refresh the data
 
-  useEffect(() => {
-    if (!userToken) {
-      setError("User not authenticated. Please log in again.");
-      return;
-    }
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    mobile: "",
+    localReference: "",
+    image: null,
+    mohanagarId: "",
+    thanaId: "",
+    wardId: "",
+    electionCenterId: "",
+    userType: "",
+    nid: "",
+    birthDateEn: "",
+  });
 
-    const fetchLocationData = async () => {
-      try {
-        const [mohanagarsData, thanasData, wardsData, electionCentersData] =
-          await Promise.all([
-            fetch("https://bnp-api-9oht.onrender.com/location/mohanagar").then(
-              (res) => res.json()
-            ),
-            fetch("https://bnp-api-9oht.onrender.com/location/thana").then(
-              (res) => res.json()
-            ),
-            fetch("https://bnp-api-9oht.onrender.com/location/ward").then(
-              (res) => res.json()
-            ),
-            fetch(
-              "https://bnp-api-9oht.onrender.com/location/electionCenter"
-            ).then((res) => res.json()),
-          ]);
-
-        setMohanagars(mohanagarsData);
-        setThanas(thanasData);
-        setWards(wardsData);
-        setElectionCenters(electionCentersData);
-      } catch (err) {
-        console.error("Error fetching location data:", err);
-        setError("Failed to load location data. Please try again.");
-      }
-    };
-
-    fetchLocationData();
-  }, [userToken]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const usertypes = [
     { name: "BNP", value: "BNP" },
@@ -64,236 +41,370 @@ const UpdateProfile = ({ closeModal, onUpdate, initialData }) => {
     { name: "JUBODOL", value: "JUBODOL" },
   ];
 
+  // Initialize form with user data
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        fullName: userData.fullName || "",
+        email: userData.email || "",
+        mobile: userData.mobile || "",
+        mohanagarId: userData.mohanagarId || "",
+        thanaId: userData.thanaId || "",
+        wardId: userData.wardId || "",
+        electionCenterId: userData.electionCenterId || "",
+        userType: userData.userType || "BNP",
+        nid: userData.nid || "",
+        localReference: userData.localReference || "",
+        birthDateEn: userData.birthDateEn || "",
+        image: userData.image || "",
+      });
+      setSelectedThana(userData.thanaId);
+    }
+  }, [userData]);
+
+  // Fetch location data
+  useEffect(() => {
+    const fetchLocationData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const endpoints = [
+          "https://bnp-api-9oht.onrender.com/location/mohanagar",
+          "https://bnp-api-9oht.onrender.com/location/thana",
+          "https://bnp-api-9oht.onrender.com/location/ward",
+          "https://bnp-api-9oht.onrender.com/location/electionCenter",
+        ];
+
+        const results = await Promise.all(
+          endpoints.map(async (endpoint) => {
+            const response = await fetch(endpoint);
+            if (!response.ok)
+              throw new Error(`HTTP error! status: ${response.status}`);
+            return await response.json();
+          })
+        );
+
+        const [mohanagarsData, thanasData, wardsData, electionCentersData] =
+          results;
+        setMohanagars(mohanagarsData);
+        setThanas(thanasData);
+        setWards(wardsData);
+        setElectionCenters(electionCentersData);
+      } catch (error) {
+        setError(`Failed to fetch data: ${error.message}`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchLocationData();
+  }, []);
+
+  // Filter wards based on selected thana
+  useEffect(() => {
+    const filtered = wards.filter((ward) => ward.thanaId === selectedThana);
+    setFilteredWards(filtered);
+
+    if (formData.wardId) {
+      const filteredCenters = electionCenters.filter(
+        (center) => center.wardId === formData.wardId
+      );
+      setFilteredElectionCenters(filteredCenters);
+    } else {
+      setFilteredElectionCenters([]);
+    }
+  }, [selectedThana, wards, formData.wardId, electionCenters]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
     }));
   };
 
-  const handleImageChange = (e) => {
+  const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prevData) => ({ ...prevData, image: reader.result }));
-      };
-      reader.readAsDataURL(file);
+      if (file.size > 30 * 1024) {
+        Swal.fire({
+          title: "ত্রুটি",
+          text: "ছবির আকার 20KB এর বেশি হতে পারবে না।",
+          icon: "error",
+        });
+        return;
+      }
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+      }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    Swal.fire({
-      title: "আপনি কি নিশ্চিত?",
-      text: "আপডেট করার আগে নিশ্চিত করুন!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "হ্যাঁ, আপডেট করুন!",
-      cancelButtonText: "বাতিল করুন",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        setIsLoading(true);
-        setError("");
-
-        if (!id || !userToken) {
-          setError("ব্যবহারকারী প্রমাণিত নয়। অনুগ্রহ করে আবার লগ ইন করুন।");
-          setIsLoading(false);
-          return;
-        }
-
-        try {
-          const response = await fetch(
-            `https://bnp-api-9oht.onrender.com/auth/${id}`,
-            {
-              method: "PUT",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${userToken}`,
-              },
-              body: JSON.stringify({ ...formData, userId: id }),
-            }
-          );
-
-          if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(
-              errorData.message || "প্রোফাইল আপডেট করতে ব্যর্থ হয়েছে।"
-            );
-          }
-
-          const updatedUser = await response.json();
-          onUpdate(updatedUser);
-          Swal.fire("সফল!", "আপনার প্রোফাইল সফলভাবে আপডেট হয়েছে।", "success");
-          closeModal();
-        } catch (err) {
-          console.error("Error updating profile:", err);
-          setError(
-            err.message || "প্রোফাইল আপডেট করার সময় একটি সমস্যা হয়েছে।"
-          );
-          Swal.fire("ব্যর্থ!", "আপডেটের সময় একটি ত্রুটি ঘটেছে।", "error");
-        } finally {
-          setIsLoading(false);
-        }
+    const data = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (formData[key] !== null) {
+        data.append(key, formData[key]);
       }
     });
+
+    try {
+      const response = await fetch(
+        `https://bnp-api-9oht.onrender.com/auth/${userData.id}`,
+        {
+          method: "PUT",
+          body: data,
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        Swal.fire({
+          title: "সফল",
+          text: "প্রোফাইল আপডেট সফল হয়েছে!",
+          icon: "success",
+        }).then(() => {
+          closeModal();
+        });
+      } else {
+        const errorText = await response.text();
+        Swal.fire({
+          title: "ত্রুটি",
+          text: `আপডেট ব্যর্থ হয়েছে: ${errorText}`,
+          icon: "error",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "ত্রুটি",
+        text: "সার্ভারের সাথে যোগাযোগ ব্যর্থ হয়েছে।",
+        icon: "error",
+      });
+    }
+    refetch(); // Refresh the user data after update
   };
 
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-        আপনার প্রোফাইল আপডেট করুন
-      </h2>
-
-      {error && (
-        <div
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
-          role="alert"
-        >
-          <span className="block sm:inline">{error}</span>
+    <div className="max-w-screen-2xl lg:mx-auto p-4 my-12">
+      <div className="flex gap-4 items-center justify-center mb-6">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_Bangladesh_Nationalist_Party.svg"
+          alt="লোগো"
+          width={96}
+          height={96}
+          priority
+        />
+        <h1 className="font-bold text-xl">প্রোফাইল আপডেট করুন</h1>
+      </div>
+      <form className="max-w-xl mx-auto my-4" onSubmit={handleSubmit}>
+        <div className="lg:flex gap-4">
+          <div className="mb-4 w-full">
+            <label className="block text-sm font-semibold">পূর্ণ নাম</label>
+            <input
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleChange}
+              type="text"
+              className="border rounded-2xl w-full px-4 py-3 mt-2"
+              required
+            />
+          </div>
+          <div className="mb-4 w-full">
+            <label className="block text-sm font-semibold">ইমেইল এড্রেস</label>
+            <input
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              type="email"
+              className="border rounded-2xl w-full px-4 py-3 mt-2"
+              required
+            />
+          </div>
         </div>
-      )}
+        {/* New birthdate fields */}
+        {/* <div className="lg:flex gap-4">
+          <div className="mb-4 w-full">
+            <label className="block text-sm font-semibold">
+              জন্ম তারিখ (ইংরেজি)
+            </label>
+            <input
+              name="birthDateEn"
+              value={formData.birthDateEn}
+              onChange={handleChange}
+              type="date"
+              className="border rounded-2xl w-full px-4 py-3 mt-2"
+            />
+          </div>
+        </div> */}
+        <div className="lg:flex gap-4">
+          <div className="mb-4 w-full">
+            <label className="block text-sm font-semibold">
+              মোবাইল নাম্বার
+            </label>
+            <input
+              name="mobile"
+              value={formData.mobile}
+              onChange={handleChange}
+              type="number"
+              className="border rounded-2xl w-full px-4 py-3 mt-2"
+              required
+            />
+          </div>
+          <div className="mb-4 w-full">
+            <label className="block text-sm font-semibold">
+              এনআইডি নাম্বার
+            </label>
+            <input
+              name="nid"
+              value={formData.nid}
+              onChange={handleChange}
+              type="number"
+              className="border rounded-2xl w-full px-4 py-3 mt-2"
+              required
+            />
+          </div>
+        </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[
-            {
-              label: "পূর্ণ নাম",
-              name: "fullName",
-              type: "text",
-              required: true,
-            },
-            {
-              label: "ইউজার আইডি",
-              name: "partyId",
-              type: "text",
-              required: true,
-            },
-            { label: "ইমেইল", name: "email", type: "email", required: true },
-            {
-              label: "মোবাইল নম্বর",
-              name: "mobile",
-              type: "tel",
-              required: true,
-            },
-            {
-              label: "এনআইডি নম্বর",
-              name: "nid",
-              type: "text",
-              required: true,
-            },
-            { label: "জন্ম তারিখ", name: "birthDate", type: "date" },
-          ].map(({ label, name, type, required }) => (
-            <div key={name}>
-              <label
-                htmlFor={name}
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {label}
-              </label>
-              <input
-                type={type}
-                name={name}
-                id={name}
-                value={formData[name] || ""}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                required={required}
-              />
+        <div className="lg:flex gap-4 my-4">
+          <div className="lg:w-full">
+            <label htmlFor="userType" className="mb-3 block">
+              সংগঠন
+            </label>
+            <div className="flex flex-wrap gap-4">
+              {usertypes.map((type) => (
+                <label key={type.value} className="flex items-center space-x-2">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value={type.value}
+                    checked={formData.userType === type.value}
+                    onChange={handleChange}
+                    className="form-radio text-primary"
+                  />
+                  <span>{type.name}</span>
+                </label>
+              ))}
             </div>
-          ))}
-
-          {[
-            { label: "রাজনৈতিক পদবি", name: "userType", options: usertypes },
-            { label: "ওয়ার্ড", name: "ward", options: wards },
-            { label: "থানা", name: "thana", options: thanas },
-            { label: "মহানগর", name: "mohanagar", options: mohanagars },
-          ].map(({ label, name, options }) => (
-            <div key={name}>
-              <label
-                htmlFor={name}
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                {label}
-              </label>
-              <select
-                name={name}
-                id={name}
-                value={formData[name] || ""}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              >
-                <option value="">{`${label} নির্বাচন করুন`}</option>
-                {options.map((option) => (
-                  <option
-                    key={option.id || option.value}
-                    value={option.id || option.value}
-                  >
-                    {option.name || option.nameBangla}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
-
-          <div>
-            <label
-              htmlFor="electionCenter"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
-              নির্বাচনী কেন্দ্র
+          </div>
+          <div className="lg:w-full">
+            <label htmlFor="mohanagarId" className="mb-3 block">
+              সাংগঠনিক ইউনিট
             </label>
             <select
-              name="electionCenter"
-              id="electionCenter"
-              value={formData.electionCenter || ""}
+              name="mohanagarId"
+              value={formData.mohanagarId}
               onChange={handleChange}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
             >
-              <option value="">নির্বাচনী কেন্দ্র নির্বাচন করুন</option>
-              {electionCenters.map((center) => (
-                <option key={center.id} value={center.id}>
-                  {center.name}
+              <option value="">মহানগর নির্বাচন করুন</option>
+              {mohanagars.map((mohanagar) => (
+                <option key={mohanagar.id} value={mohanagar.id}>
+                  {mohanagar.nameBangla}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        <div>
-          <label
-            htmlFor="image"
-            className="block text-sm font-medium text-gray-700 mb-1"
+        <div className="lg:flex gap-4 my-4">
+          <div className="w-full">
+            <label htmlFor="thanaId" className="mb-3 block">
+              থানা নির্বাচন করুন
+            </label>
+            <select
+              name="thanaId"
+              value={formData.thanaId}
+              onChange={(e) => {
+                handleChange(e);
+                setSelectedThana(e.target.value);
+              }}
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            >
+              <option value="">থানা নির্বাচন করুন</option>
+              {thanas.map((thana) => (
+                <option key={thana.id} value={thana.id}>
+                  {thana.nameBangla}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="w-full">
+            <label htmlFor="wardId" className="mb-3 block">
+              ওয়ার্ড নির্বাচন করুন
+            </label>
+            <select
+              name="wardId"
+              value={formData.wardId}
+              onChange={handleChange}
+              className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            >
+              <option value="">ওয়ার্ড নির্বাচন করুন</option>
+              {filteredWards.map((ward) => (
+                <option key={ward.id} value={ward.id}>
+                  {ward.nameBangla}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="w-full mb-4">
+          <label htmlFor="electionCenterId" className="mb-3 block">
+            নির্বাচনী কেন্দ্র
+          </label>
+          <select
+            name="electionCenterId"
+            value={formData.electionCenterId}
+            onChange={handleChange}
+            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
           >
-            প্রোফাইল ছবি
+            <option value="">নির্বাচনী কেন্দ্র নির্বাচন করুন</option>
+            {filteredElectionCenters.map((center) => (
+              <option key={center.id} value={center.id}>
+                {center.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="localReference" className="mb-3 block">
+            স্থানীয় বি এন পি নেতার নাম যিনি আমাকে চিনেন*
+          </label>
+          <input
+            type="text"
+            name="localReference"
+            value={formData.localReference}
+            onChange={handleChange}
+            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="image" className="mb-3 block">
+            ছবি আপডেট করুন
           </label>
           <input
             type="file"
             name="image"
-            id="image"
-            onChange={handleImageChange}
-            className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100"
+            onChange={handleFileUpload}
+            className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
           />
         </div>
 
-        <div className="flex justify-end space-x-4">
-          <button
-            type="button"
-            onClick={closeModal}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            বাতিল
-          </button>
+        <div className="mt-6">
           <button
             type="submit"
-            disabled={isLoading}
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="w-full bg-blue-500 text-white py-3 px-5 rounded-lg hover:bg-blue-600"
           >
-            {isLoading ? "আপডেট হচ্ছে..." : "পরিবর্তন সংরক্ষণ করুন"}
+            আপডেট করুন
           </button>
         </div>
       </form>

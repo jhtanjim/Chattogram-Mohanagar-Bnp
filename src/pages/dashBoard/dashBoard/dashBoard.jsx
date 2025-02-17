@@ -66,21 +66,21 @@ const DashBoard = () => {
         )}
 
         {/* card 5 */}
-        {/* <Link
+        <Link
           to="/elections"
           className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
         >
           <AiFillLike className="text-6xl mx-auto" />
           <h1 className="text-4xl font-bold">ভোট দিন</h1>
-        </Link> */}
+        </Link>
         {/* card 6 */}
-        {/* <Link
+        <Link
           to="/candiDate"
           className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
         >
           <MdHowToVote className="text-6xl mx-auto" />
           <h1 className="text-4xl font-bold">প্রার্থী হন</h1>
-        </Link> */}
+        </Link>
         {/* card 7: Conditional Rendering */}
         {(isVerifier || isThanaVerifier) && (
           <Link

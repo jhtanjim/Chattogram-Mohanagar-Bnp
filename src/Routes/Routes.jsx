@@ -19,6 +19,10 @@ import UnderConstruction from "../Components/UnderConstruction/UnderConstruction
 import ResetPass from "../pages/Shared/resetPass/resetPass";
 import forgetPass from "../pages/Shared/forgetPass/forgetPass";
 import ForgetPass from "../pages/Shared/forgetPass/forgetPass";
+import Nomination from "../pages/dashBoard/candiDate/nomination";
+import CandidateList from "../pages/dashBoard/candiDate/CandidateList";
+import PressRelease from "../pages/Shared/pressRelease/pressRelease";
+import SinglePressRelease from "../pages/Shared/pressRelease/SinglePressRelease ";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -70,7 +74,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/candiDate",
-        element: <CandiDate />,
+        element: <CandidateList />,
       },
       {
         path: "/noticeBoard",
@@ -81,12 +85,25 @@ export const router = createBrowserRouter([
         element: <Video />,
       },
       {
+        path: "/pressRelease",
+        element: <PressRelease />,
+      },
+      {
+        path: "/pressRelease/:id",
+        element: <SinglePressRelease />,
+      },
+
+      {
         path: "/forget-password",
         element: <ForgetPass />,
       },
       {
         path: "/reset-password",
         element: <ResetPass />,
+      },
+      {
+        path: "/nomination/:id",
+        element: <Nomination />,
       },
       // Wildcard Route for Undefined Paths
 

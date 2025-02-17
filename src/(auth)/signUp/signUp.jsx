@@ -155,7 +155,7 @@ const SignUp = () => {
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 3000 * 1024) {
+      if (file.size > 30 * 1024) {
         Swal.fire({
           title: "ত্রুটি",
           text: "ছবির আকার 20KB এর বেশি হতে পারবে না।",
@@ -294,7 +294,8 @@ const SignUp = () => {
               name="fullName"
               value={formData.fullName}
               onChange={handleChange}
-              placeholder="জন ডো"
+              placeholder="নাজিমুর রহমান
+"
               type="text"
               className="border  rounded-2xl w-full px-4 py-3 mt-2"
               required
@@ -516,7 +517,7 @@ const SignUp = () => {
         </div>
         <div>
           <label htmlFor="localReference" className="mb-3 block">
-            স্থানীয় নেতার নাম, যিনি আপনাকে চিনে
+            স্থানীয় বি এন পি নেতার নাম যিনি আমাকে চিনেন*
           </label>
           <input
             type="text"
@@ -540,6 +541,7 @@ const SignUp = () => {
             name="image"
             onChange={handleFileUpload}
             className="w-full rounded-lg border-[1.5px] border-stroke py-3 px-5"
+            required
           />
         </div>
 

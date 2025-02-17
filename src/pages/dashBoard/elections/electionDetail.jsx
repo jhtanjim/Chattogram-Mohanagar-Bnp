@@ -27,6 +27,7 @@ export default function ElectionDetail() {
     })
       .then((res) => res.json())
       .then((data) => {
+        console.log(data);
         setElectionDetail(data);
         setLoading(false);
       })

@@ -5,6 +5,7 @@ const MessageSend = () => {
   const [selected, setSelected] = useState("");
   const [message, setMessage] = useState("");
   const [title, setTitle] = useState("");
+  const [expiredAt, setExpiredAt] = useState(""); // New state for expiration date
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -13,7 +14,7 @@ const MessageSend = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!message || !title) {
+    if (!message || !title || !expiredAt) {
       setError("সব তথ্য পূরণ করুন");
       Swal.fire({
         icon: "error",
@@ -29,6 +30,7 @@ const MessageSend = () => {
       groupType: selected,
       title,
       message,
+      expiredAt, // Include expiredAt in the request
     };
 
     console.log("NoticeType being sent:", NoticeType);
@@ -59,6 +61,7 @@ const MessageSend = () => {
 
       setMessage("");
       setTitle("");
+      setExpiredAt(""); // Reset the expiration date field
     } catch (err) {
       setError(err.message);
       Swal.fire({
@@ -113,6 +116,13 @@ const MessageSend = () => {
           rows="4"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
+        />
+        <h1 className="opacity-60">ম্যাসেজ ডিলিট হওয়ার সময় </h1>
+        <input
+          type="date"
+          className="w-full p-2 mb-4 border border-gray-300 rounded-md"
+          value={expiredAt}
+          onChange={(e) => setExpiredAt(e.target.value)}
         />
         <button
           type="submit"

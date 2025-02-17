@@ -1,38 +1,45 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import UpdateProfile from "../updateProfile/updateProfile";
 import { useUserData } from "../../../hooks/useUserData";
 
 const MyProfile = () => {
-  const { userData } = useUserData(); // Use userData directly
+  const { userData, loading, error, refetch } = useUserData();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleProfileUpdate = (updatedData) => {
-    console.log("Updated profile data:", updatedData); // Handle the profile update logic
+  const handleProfileUpdate = useCallback((updatedData) => {
+    console.log("Updated profile data:", updatedData);
     closeModal();
-  };
-
+  }, []);
+  // Call refetch whenever you want to refresh the data
+  useEffect(() => {
+    refetch();
+  }, []); // This will refetch when the component mounts
   const InfoRow = ({ label, value }) => (
     <div className="flex justify-between items-center py-2 border-b border-gray-300">
       <span className="text-gray-600 font-bold">{label} :</span>
-      <span className="text-gray-800">{value || "N/A"}</span>
+      <span className="text-gray-800 text-end">{value || "N/A"}</span>
     </div>
   );
 
-  // If userData is not yet available, show a loading or placeholder state
-  if (!userData) {
+  if (loading)
     return (
       <div className="flex justify-center items-center min-h-screen">
         <p className="text-gray-500 text-lg">Loading profile...</p>
       </div>
     );
-  }
+  if (error)
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-red-500 text-lg">Error: {error}</p>
+      </div>
+    );
 
   return (
-    <div className="my-8 flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-gray-100 rounded-3xl shadow-lg overflow-hidden">
+    <div className="my-8 flex items-center justify-center ">
+      <div className="w-full max-w-2xl bg-gray-100 rounded-3xl shadow-lg overflow-hidden">
         <div className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="relative w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-md">
@@ -52,7 +59,7 @@ const MyProfile = () => {
             <InfoRow label="ইমেইল" value={userData.email} />
             <InfoRow label="ফোন নম্বর" value={userData.mobile} />
             <InfoRow label="এনআইডি নম্বর" value={userData.nid} />
-            <InfoRow label="জন্ম তারিখ" value={userData.birthDate} />
+            {/* <InfoRow label="জন্ম তারিখ" value={userData.birthDate} /> */}
             <InfoRow label="সংগঠন / অঙ্গসংগঠন" value={userData.userType} />
             <InfoRow label="ওয়ার্ড" value={userData.ward} />
             <InfoRow label="থানা" value={userData.thana} />
@@ -76,11 +83,18 @@ const MyProfile = () => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
-          <div className="bg-white p-8 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white p-8 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative">
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-gray-500 hover:bg-gray-100 rounded-full transition-colors text-xl font-bold"
+            >
+              ×
+            </button>
             <UpdateProfile
               closeModal={closeModal}
               onUpdate={handleProfileUpdate}
               initialData={userData}
+              refetch={refetch}
             />
           </div>
         </div>

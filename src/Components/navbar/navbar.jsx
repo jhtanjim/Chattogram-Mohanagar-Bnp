@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useUserData } from "../../hooks/useUserData";
@@ -9,6 +9,7 @@ const Navbar = () => {
   const { isAuthenticated, logout } = useAuth();
   const { userData } = useUserData();
   const [isUserDataLoaded, setIsUserDataLoaded] = useState(false);
+  const navigate = useNavigate(); // Use the navigate hook
 
   useEffect(() => {
     if (userData) {
@@ -23,7 +24,11 @@ const Navbar = () => {
   const closeMenu = () => {
     setMenuOpen(false);
   };
-
+  const handleLogout = () => {
+    logout(); // Clear authentication data
+    closeMenu(); // Close the menu
+    navigate("/"); // Redirect to the homepage
+  };
   return (
     <nav className="sticky top-0 w-full bg-green-100 border-b border-gray-200 shadow-md z-50">
       <div className="container mx-auto flex items-center justify-between p-4">
@@ -98,11 +103,10 @@ const Navbar = () => {
             </Link>
           )}
 
-          {isAuthenticated && isUserDataLoaded ? (
+          {isAuthenticated ? (
             <button
               onClick={() => {
-                logout();
-                closeMenu();
+                handleLogout;
               }}
               className="block w-full md:w-auto text-center text-white p-2 rounded-xl bg-red-500 hover:text-green-900 font-medium transition duration-200 lg:hidden md:hidden "
             >
@@ -121,13 +125,13 @@ const Navbar = () => {
 
         {/* Desktop Sign-In/Logout Button */}
         <div className="hidden md:flex items-center space-x-4">
-          {isAuthenticated && isUserDataLoaded ? (
+          {isAuthenticated ? (
             <>
               <span className="text-green-800 font-medium">
-                {userData.fullName}
+                {userData?.fullName}
               </span>
               <button
-                onClick={logout}
+                onClick={handleLogout}
                 className="inline-flex items-center bg-red-500 hover:text-white hover:bg-green-700 text-white font-medium px-4 py-2 rounded-md transition duration-200"
               >
                 <span className="mr-2">LOGOUT</span>
