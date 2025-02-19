@@ -6,8 +6,14 @@ import { Link } from "react-router-dom";
 import { FaPeopleGroup, FaPerson } from "react-icons/fa6";
 
 const DashBoard = () => {
-  const { userData, loading, error, isVerifier, isThanaVerifier } =
-    useUserData();
+  const {
+    userData,
+    loading,
+    error,
+    isVerifier,
+    isThanaVerifier,
+    isGeneralUser,
+  } = useUserData();
   console.log(userData);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -38,23 +44,37 @@ const DashBoard = () => {
           <FaUser className="text-6xl mx-auto" />
           <h1 className="text-4xl font-bold">প্রোফাইল</h1>
         </Link>
-        {/* card 2 */}
-        <Link
-          to="/profileCard"
-          className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
-        >
-          <FaIdCard className="text-6xl mx-auto" />
-          <h1 className="text-4xl font-bold">আইডি কার্ড</h1>
-        </Link>
-        {/* card 3 */}
-        <Link
-          to="/noticeBoard"
-          className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
-        >
-          <MdMessage className="text-6xl mx-auto" />
-          <h1 className="text-4xl font-bold">বিজ্ঞপ্তি দেখুন</h1>
-        </Link>
-        {/* card 4 */}
+
+        {isGeneralUser && (
+          <>
+            <p className="border bg-[#DCFCE7]/50 p-4 py-8 text-center">
+              <FaIdCard className="text-6xl mx-auto" />
+              <h1 className="text-4xl font-bold">আইডি কার্ড</h1>
+            </p>
+            <Link
+              to="/noticeBoard"
+              className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
+            >
+              <MdMessage className="text-6xl mx-auto" />
+              <h1 className="text-4xl font-bold">বিজ্ঞপ্তি দেখুন</h1>
+            </Link>
+            <Link
+              to="/elections"
+              className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
+            >
+              <AiFillLike className="text-6xl mx-auto" />
+              <h1 className="text-4xl font-bold">ভোট দিন</h1>
+            </Link>
+            <Link
+              to="/candiDate"
+              className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
+            >
+              <MdHowToVote className="text-6xl mx-auto" />
+              <h1 className="text-4xl font-bold">প্রার্থী হন</h1>
+            </Link>
+          </>
+        )}
+
         {(isVerifier || isThanaVerifier) && (
           <Link
             to="/messageSend"
@@ -65,22 +85,6 @@ const DashBoard = () => {
           </Link>
         )}
 
-        {/* card 5 */}
-        <Link
-          to="/elections"
-          className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
-        >
-          <AiFillLike className="text-6xl mx-auto" />
-          <h1 className="text-4xl font-bold">ভোট দিন</h1>
-        </Link>
-        {/* card 6 */}
-        <Link
-          to="/candiDate"
-          className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
-        >
-          <MdHowToVote className="text-6xl mx-auto" />
-          <h1 className="text-4xl font-bold">প্রার্থী হন</h1>
-        </Link>
         {/* card 7: Conditional Rendering */}
         {(isVerifier || isThanaVerifier) && (
           <Link
@@ -92,7 +96,7 @@ const DashBoard = () => {
           </Link>
         )}
         <Link
-          to="/asfa"
+          to="/about"
           className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
         >
           <FaPeopleGroup className="text-6xl mx-auto" />

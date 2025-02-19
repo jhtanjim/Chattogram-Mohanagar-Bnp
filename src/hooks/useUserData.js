@@ -97,6 +97,7 @@ export function useUserData() {
   const [error, setError] = useState(null);
   const [isVerifier, setIsVerifier] = useState(false);
   const [isThanaVerifier, setIsThanaVerifier] = useState(false);
+  const [isGeneralUser, setIsGeneralUser] = useState(false);
 
   const fetchUserData = useCallback(async () => {
     setLoading(true);
@@ -123,6 +124,7 @@ export function useUserData() {
 
       setIsVerifier(roles.includes("VERIFIER"));
       setIsThanaVerifier(roles.includes("THANA_VERIFIER"));
+      setIsGeneralUser(roles.includes("GENERAL"));
     } catch (err) {
       setError(err.message || "An error occurred");
     } finally {
@@ -140,6 +142,7 @@ export function useUserData() {
     error,
     isVerifier,
     isThanaVerifier,
+    isGeneralUser,
     refetch: fetchUserData,
   };
 }
