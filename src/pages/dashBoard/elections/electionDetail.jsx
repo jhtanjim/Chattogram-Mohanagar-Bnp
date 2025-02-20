@@ -39,14 +39,35 @@ export default function ElectionDetail() {
       });
   }, [id, userToken]);
 
+  // Function to check if current time is within election period
+  const isVotingPeriod = () => {
+    if (!electionDetail) return false;
+
+    const now = new Date().getTime();
+    const startDate = new Date(electionDetail.startDate).getTime();
+    const endDate = new Date(electionDetail.endDate).getTime();
+
+    return now >= startDate && now <= endDate;
+  };
+
   const handleVote = async (postId, candidateId) => {
     try {
       setErrorMessage("");
       setSuccessMessage("");
 
+      // Check if outside voting period
+      if (!isVotingPeriod()) {
+        Swal.fire({
+          icon: "error",
+          title: "ভোট দিতে ব্যর্থ হয়েছে",
+          text: "বর্তমানে ভোটদান চলছে না।",
+          confirmButtonColor: "#d33",
+        });
+        return;
+      }
+
       // Check if the user has already voted for this candidate
       if (votedCandidates.includes(candidateId)) {
-        // Show SweetAlert2 error message
         Swal.fire({
           icon: "error",
           title: "ভোট দিতে ব্যর্থ হয়েছে",
@@ -70,7 +91,6 @@ export default function ElectionDetail() {
 
       if (response.ok) {
         const data = await response.json();
-        // Show SweetAlert2 success message
         Swal.fire({
           icon: "success",
           title: "ভোট সফল",
@@ -96,6 +116,17 @@ export default function ElectionDetail() {
         confirmButtonColor: "#d33",
       });
     }
+  };
+
+  // Function to get button text based on various conditions
+  const getButtonText = (candidateId) => {
+    if (votedCandidates.includes(candidateId)) {
+      return "ভোট দেওয়া হয়েছে";
+    }
+    if (!isVotingPeriod()) {
+      return "ভোটদান বন্ধ";
+    }
+    return "ভোট দিন";
   };
 
   if (loading) {
@@ -161,16 +192,18 @@ export default function ElectionDetail() {
                           onClick={() =>
                             handleVote(currentPost.id, candidate.id)
                           }
-                          disabled={votedCandidates.includes(candidate.id)}
+                          disabled={
+                            votedCandidates.includes(candidate.id) ||
+                            !isVotingPeriod()
+                          }
                           className={`px-4 py-2 rounded ${
-                            votedCandidates.includes(candidate.id)
+                            votedCandidates.includes(candidate.id) ||
+                            !isVotingPeriod()
                               ? "bg-gray-400 text-gray-700 cursor-not-allowed"
                               : "bg-green-500 text-white hover:bg-green-600"
                           }`}
                         >
-                          {votedCandidates.includes(candidate.id)
-                            ? "ভোট দেওয়া হয়েছে"
-                            : "ভোট দিন"}
+                          {getButtonText(candidate.id)}
                         </button>
                       </td>
                     </tr>
