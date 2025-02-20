@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import Swal from "sweetalert2"; // Import SweetAlert2
+import Swal from "sweetalert2";
+import { useUserData } from "../../../hooks/useUserData";
 
 const Nomination = () => {
-  const { id } = useParams(); // Get election ID from the URL
+  // const {userData}=useUserDa
+  const { id } = useParams();
   const [electionPosts, setElectionPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState(""); // For success message
-  const [nominatedPosts, setNominatedPosts] = useState(new Set()); // To keep track of nominated posts
+  const [successMessage, setSuccessMessage] = useState("");
+  const { userData } = useUserData();
+  console.log(userData?.id);
+  const loggedInUserId = userData?.id;
 
   useEffect(() => {
-    // Fetch details for the specific election
+    fetchElectionDetails();
+    clearMessages();
+  }, [id]);
+
+  const clearMessages = () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+  };
+
+  const fetchElectionDetails = () => {
+    setLoading(true);
+    clearMessages();
+
     fetch(`https://bnp-api-9oht.onrender.com/election/${id}`, {
       headers: {
         "Content-Type": "application/json",
@@ -25,22 +41,21 @@ const Nomination = () => {
         return res.json();
       })
       .then((data) => {
-        setElectionPosts(data.posts || []); // Store posts
-        setLoading(false);
+        console.log(data);
+        setElectionPosts(data.posts || []);
       })
       .catch((error) => {
         console.error("Error fetching election details:", error);
         setErrorMessage("ডেটা লোড করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।");
+      })
+      .finally(() => {
         setLoading(false);
       });
-
-    // Load nominated posts from localStorage on page load
-    const savedNominatedPosts =
-      JSON.parse(localStorage.getItem("nominatedPosts")) || [];
-    setNominatedPosts(new Set(savedNominatedPosts)); // Convert to Set for efficient lookups
-  }, [id]);
+  };
 
   const handleNominationRequest = (postId) => {
+    clearMessages();
+
     Swal.fire({
       title: "আপনি কি নিশ্চিত?",
       text: "আপনি কি সত্যিই এই পদে নির্বাচন করতে চান?",
@@ -62,7 +77,7 @@ const Nomination = () => {
         )
           .then((res) => {
             if (!res.ok) {
-              throw new Error("Nomination request failed");
+              return res.json().then((data) => Promise.reject(data));
             }
             return res.json();
           })
@@ -70,41 +85,151 @@ const Nomination = () => {
             setSuccessMessage(
               "নির্বাচনে প্রার্থী হতে আপনার অনুরোধ সফল হয়েছে!"
             );
-            setErrorMessage(""); // Clear any previous errors
-            const updatedNominatedPosts = new Set(nominatedPosts);
-            updatedNominatedPosts.add(postId);
-
-            // Save nominated posts to localStorage
-            localStorage.setItem(
-              "nominatedPosts",
-              JSON.stringify([...updatedNominatedPosts])
-            );
-
-            setNominatedPosts(updatedNominatedPosts); // Update state
+            fetchElectionDetails();
           })
           .catch((error) => {
             console.error("Error requesting nomination:", error);
             setErrorMessage(
-              "নির্বাচনের প্রার্থিতা রিকোয়েস্ট করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।"
+              error.message ||
+                "নির্বাচনের প্রার্থিতা রিকোয়েস্ট করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।"
             );
-            setSuccessMessage(""); // Clear any previous success messages
           });
       }
     });
+  };
+
+  const handleWithdrawal = (postId) => {
+    clearMessages();
+
+    Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "আপনি কি সত্যিই এই পদ থেকে প্রার্থিতা প্রত্যাহার করতে চান?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "হ্যাঁ, প্রত্যাহার করি",
+      cancelButtonText: "না, বাতিল করি",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(
+          `https://bnp-api-9oht.onrender.com/election/request-withdrawal/candidate/${postId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+          .then(async (res) => {
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw errorData;
+            }
+            return res.json();
+          })
+          .then((data) => {
+            setSuccessMessage("আপনার প্রার্থিতা প্রত্যাহার সফল হয়েছে!");
+            fetchElectionDetails();
+          })
+          .catch((error) => {
+            console.error("Error withdrawing nomination:", error);
+            setErrorMessage(
+              "প্রার্থিতা প্রত্যাহার করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।"
+            );
+          });
+      }
+    });
+  };
+
+  const getNomineeStatus = (post) => {
+    console.log({ post });
+    if (!post.nominees) return null;
+    return post.nominees.find((nominee) => nominee.userId === loggedInUserId);
+    // console.log(nominiStatus);
+  };
+
+  const renderActionButton = (post) => {
+    const nomineeStatus = getNomineeStatus(post);
+    console.log({ nomineeStatus });
+    if (nomineeStatus) {
+      return (
+        <div className="space-y-2">
+          <div
+            className={`text-sm font-medium ${
+              nomineeStatus.status === "PENDING"
+                ? "text-yellow-600"
+                : nomineeStatus.status === "APPROVED"
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {nomineeStatus.status === "PENDING" && (
+              <>
+                <span>অপেক্ষমান</span>
+                <button
+                  className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={() => handleWithdrawal(post.id)}
+                >
+                  ক্যান্সেল
+                </button>
+              </>
+            )}
+            {nomineeStatus.status === "APPROVED" && (
+              <>
+                <span>অনুমোদিত</span>
+                <button
+                  className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                  onClick={() => handleWithdrawal(post.id)}
+                >
+                  প্রত্যাহার
+                </button>
+              </>
+            )}
+            {nomineeStatus.status === "REJECTED" && <span>প্রত্যাখ্যাত</span>}
+          </div>
+        </div>
+      );
+    }
+
+    // Show nomination button if user hasn't nominated
+    return (
+      <button
+        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+        onClick={() => handleNominationRequest(post.id)}
+      >
+        নির্বাচন করুন
+      </button>
+    );
   };
 
   if (loading) {
     return <p>তথ্য লোড হচ্ছে...</p>;
   }
 
-  if (errorMessage) {
-    return <p className="text-red-600">{errorMessage}</p>;
-  }
-
   return (
     <div className="p-5">
-      <h2 className="text-xl font-bold mb-4">নির্বাচনের পদের তালিকা</h2>
-      {successMessage && <p className="text-green-600">{successMessage}</p>}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">নির্বাচনের পদের তালিকা</h2>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={fetchElectionDetails}
+        >
+          রিফ্রেশ করুন
+        </button>
+      </div>
+
+      {errorMessage && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {errorMessage}
+        </div>
+      )}
+
+      {successMessage && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {successMessage}
+        </div>
+      )}
+
       {electionPosts.length > 0 ? (
         <table className="w-full border-collapse border border-gray-300">
           <thead>
@@ -120,21 +245,7 @@ const Nomination = () => {
                   {post.name}
                 </td>
                 <td className="border border-gray-300 px-4 py-2 text-center">
-                  {nominatedPosts.has(post.id) ? (
-                    <button
-                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                      onClick={() => {}}
-                    >
-                      ক্যান্সেল
-                    </button>
-                  ) : (
-                    <button
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                      onClick={() => handleNominationRequest(post.id)}
-                    >
-                      নির্বাচন করুন
-                    </button>
-                  )}
+                  {renderActionButton(post)}
                 </td>
               </tr>
             ))}

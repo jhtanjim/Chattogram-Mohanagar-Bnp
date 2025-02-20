@@ -10,7 +10,6 @@ export default function ElectionDetail() {
   const [successMessage, setSuccessMessage] = useState("");
   const [votedCandidates, setVotedCandidates] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-
   const params = useParams();
   const router = useNavigate();
   const id = params.id;

@@ -23,6 +23,7 @@ import Nomination from "../pages/dashBoard/candiDate/nomination";
 import CandidateList from "../pages/dashBoard/candiDate/CandidateList";
 import PressRelease from "../pages/Shared/pressRelease/pressRelease";
 import SinglePressRelease from "../pages/Shared/pressRelease/SinglePressRelease ";
+import ElectionResult from "../pages/dashBoard/electionResult/electionResult";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -83,6 +84,10 @@ export const router = createBrowserRouter([
       {
         path: "/video",
         element: <Video />,
+      },
+      {
+        path: "/electionResult",
+        element: <ElectionResult />,
       },
       {
         path: "/pressRelease",

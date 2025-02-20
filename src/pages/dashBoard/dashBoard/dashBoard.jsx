@@ -72,6 +72,13 @@ const DashBoard = () => {
               <MdHowToVote className="text-6xl mx-auto" />
               <h1 className="text-4xl font-bold">প্রার্থী হন</h1>
             </Link>
+            <Link
+              to="/electionResult"
+              className="border bg-[#DCFCE7]/50 p-4 py-8 text-center"
+            >
+              <MdHowToVote className="text-6xl mx-auto" />
+              <h1 className="text-4xl font-bold">electionResult</h1>
+            </Link>
           </>
         )}
 
