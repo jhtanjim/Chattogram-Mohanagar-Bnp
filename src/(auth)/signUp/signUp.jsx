@@ -402,9 +402,9 @@ const SignUp = () => {
             </div>
           </div>
           <div className="lg:w-full">
-            <label htmlFor="mohanagarId" className="mb-3  block">
+            {/* <label htmlFor="mohanagarId" className="mb-3  block">
               সাংগঠনিক ইউনিট
-            </label>
+            </label> */}
             <select
               name="mohanagarId"
               value={formData.mohanagarId}
@@ -431,9 +431,9 @@ const SignUp = () => {
         <div className="lg:flex gap-4 my-4">
           {/* Select Thana */}
           <div className="w-full">
-            <label htmlFor="thanaId" className="mb-3 block">
+            {/* <label htmlFor="thanaId" className="mb-3 block">
               থানা নির্বাচন করুন
-            </label>
+            </label> */}
             <select
               name="thanaId"
               value={formData.thanaId}
@@ -457,9 +457,9 @@ const SignUp = () => {
 
           {/* Select Ward */}
           <div className="w-full">
-            <label htmlFor="wardId" className="mb-3 block">
+            {/* <label htmlFor="wardId" className="mb-3 block">
               ওয়ার্ড নির্বাচন করুন
-            </label>
+            </label> */}
             <select
               name="wardId"
               value={formData.wardId}
@@ -490,10 +490,10 @@ const SignUp = () => {
         </div>
         {/* Election Center */}
         <div>
-          <div className="w-full">
-            <label htmlFor="electionCenterId" className="mb-3 block">
+          <div className="w-full my-8">
+            {/* <label htmlFor="electionCenterId" className="mb-3 block">
               নির্বাচনী কেন্দ্র
-            </label>
+            </label> */}
             <select
               name="electionCenterId"
               value={formData.electionCenterId}
@@ -517,7 +517,7 @@ const SignUp = () => {
         </div>
         <div>
           <label htmlFor="localReference" className="mb-3 block">
-            স্থানীয় বি এন পি নেতার নাম যিনি আমাকে চিনেন*
+            স্থানীয় বিএনপি নেতার নাম যিনি আপনাকে চিনেন
           </label>
           <input
             type="text"

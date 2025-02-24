@@ -24,6 +24,7 @@ import CandidateList from "../pages/dashBoard/candiDate/CandidateList";
 import PressRelease from "../pages/Shared/pressRelease/pressRelease";
 import SinglePressRelease from "../pages/Shared/pressRelease/SinglePressRelease ";
 import ElectionResult from "../pages/dashBoard/electionResult/electionResult";
+import ElectionRes from "../pages/dashBoard/electionResult/electionRes";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -109,6 +110,10 @@ export const router = createBrowserRouter([
       {
         path: "/nomination/:id",
         element: <Nomination />,
+      },
+      {
+        path: "/electionRes/:electionId",
+        element: <ElectionRes />,
       },
       // Wildcard Route for Undefined Paths
 

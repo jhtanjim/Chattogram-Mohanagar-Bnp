@@ -1,107 +1,101 @@
-"use client";
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-export default function ElectionResult() {
-  const [elections, setElections] = useState([]); // State to store all elections
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
-  const [loading, setLoading] = useState(true); // State for loading indicator
+const ElectionResult = () => {
+  const [elections, setElections] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    // Fetch all election data
-    fetch("https://bnp-api-9oht.onrender.com/election/summary", {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch data");
+    const fetchElections = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          throw new Error("অনুগ্রহ করে লগইন করুন।");
         }
-        return res.json();
-      })
-      .then((data) => {
-        console.log(data);
-        setElections(data); // Store the fetched elections data
-        setLoading(false); // Stop the loading indicator
-      })
-      .catch((error) => {
-        console.error("Error fetching elections:", error);
-        setErrorMessage(
-          "ইলেকশন ডেটা লোড করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।"
+
+        const response = await fetch(
+          "https://bnp-api-9oht.onrender.com/election/results/users",
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
-        setLoading(false); // Stop loading even if there's an error
-      });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error Response:", errorText);
+          throw new Error("ডেটা লোড করতে ব্যর্থ হয়েছে।");
+        }
+
+        const data = await response.json();
+        setElections(data);
+      } catch (error) {
+        console.error("Error fetching elections:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchElections();
   }, []);
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1 style={{ textAlign: "center", color: "red" }}>চলমান নির্বাচন সমূহ</h1>
+  if (loading) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-blue-600">তথ্য লোড হচ্ছে...</p>
+      </div>
+    );
+  }
 
-      {loading ? (
-        <p style={{ textAlign: "center", color: "blue" }}>তথ্য লোড হচ্ছে...</p>
-      ) : errorMessage ? (
-        <p style={{ textAlign: "center", color: "red" }}>{errorMessage}</p>
-      ) : elections.length > 0 ? (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#90ee90", textAlign: "left" }}>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold text-center text-red-600 mb-6">
+        ইলেকশন ফলাফল
+      </h1>
+
+      <div className="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table className="min-w-full table-auto text-sm">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-6 py-3 text-left font-semibold text-gray-700">
                 নির্বাচন শিরোনাম
               </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                পদের নাম
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+              <th className="px-6 py-3 text-left font-semibold text-gray-700">
                 বিস্তারিত
               </th>
             </tr>
           </thead>
           <tbody>
-            {elections.map((election) =>
-              election.posts.map((post) => (
-                <tr key={post.id} style={{ backgroundColor: "#d4f4d4" }}>
-                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    {election.title}
-                  </td>
-                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    {post.name}
-                  </td>
-                  <td
-                    style={{
-                      padding: "10px",
-                      border: "1px solid #ddd",
-                      textAlign: "center",
-                    }}
+            {elections.map((election) => (
+              <tr key={election.electionId} className="border-t">
+                <td className="px-6 py-4">{election.title}</td>
+                <td className="px-6 py-4">
+                  <Link
+                    to={`/electionRes/${election.electionId}`}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
                   >
-                    <Link
-                      to={`/elections/${election.id}`}
-                      style={{
-                        padding: "10px 20px",
-                        backgroundColor: "#28a745",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "5px",
-                        textDecoration: "none",
-                      }}
-                    >
-                      বিস্তারিত দেখুন
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
+                    বিস্তারিত দেখুন
+                  </Link>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
-      ) : (
-        <p style={{ textAlign: "center", color: "red" }}>
-          কোন তথ্য পাওয়া যায়নি।
-        </p>
-      )}
+      </div>
     </div>
   );
-}
+};
 
-// export default ElectionResult;
+export default ElectionResult;

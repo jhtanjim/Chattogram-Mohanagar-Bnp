@@ -23,8 +23,9 @@ export default function Elections() {
         return res.json();
       })
       .then((data) => {
+        const filteredElection = data.filter((e) => e.state === "RUNNING");
         console.log(data);
-        setElections(data); // Store the fetched elections data
+        setElections(filteredElection); // Store the fetched elections data
         setLoading(false); // Stop the loading indicator
       })
       .catch((error) => {

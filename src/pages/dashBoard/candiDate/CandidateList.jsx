@@ -21,7 +21,8 @@ const CandidateList = () => {
         return res.json();
       })
       .then((data) => {
-        setElections(data); // Store the fetched elections data
+        const filteredElection = data.filter((e) => e.state === "SCHEDULED");
+        setElections(filteredElection); // Store the fetched elections data
         setLoading(false);
       })
       .catch((error) => {

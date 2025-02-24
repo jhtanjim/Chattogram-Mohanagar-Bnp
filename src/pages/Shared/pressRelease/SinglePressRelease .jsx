@@ -6,7 +6,7 @@ const SinglePressRelease = () => {
   const [pressRelease, setPressRelease] = useState(null);
 
   useEffect(() => {
-    fetch(`https://bnp-api-9oht.onrender.com/content/PRESS_RELEASE/${id}`)
+    fetch(`https://bnp-api-9oht.onrender.com/content/item/${id}`)
       .then((response) => response.json())
       .then((data) => setPressRelease(data));
   }, [id]);
