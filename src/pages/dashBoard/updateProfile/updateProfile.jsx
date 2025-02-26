@@ -122,24 +122,140 @@ const UpdateProfile = ({ refetch, closeModal }) => {
       [name]: value,
     }));
   };
+  // Add this compressImage function at the top of your component or in a separate utility file
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
 
-  const handleFileUpload = (e) => {
+      reader.onload = (event) => {
+        const img = new Image();
+        img.src = event.target.result;
+
+        img.onload = () => {
+          // Create canvas
+          const canvas = document.createElement("canvas");
+
+          // Calculate new dimensions while maintaining aspect ratio
+          let width = img.width;
+          let height = img.height;
+          const MAX_WIDTH = 800;
+          const MAX_HEIGHT = 600;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          // Set canvas dimensions
+          canvas.width = width;
+          canvas.height = height;
+
+          // Draw image on canvas with new dimensions
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert canvas to Blob with reduced quality
+          canvas.toBlob(
+            (blob) => {
+              // Create a new file from the blob
+              const compressedFile = new File([blob], file.name, {
+                type: "image/jpeg",
+                lastModified: Date.now(),
+              });
+
+              resolve(compressedFile);
+            },
+            "image/jpeg",
+            0.7 // Compression quality (0.7 = 70% quality)
+          );
+        };
+
+        img.onerror = (error) => {
+          reject(error);
+        };
+      };
+
+      reader.onerror = (error) => {
+        reject(error);
+      };
+    });
+  };
+
+  // Replace your current handleFileUpload function with this one
+  const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.size > 30 * 1024) {
+      try {
+        // Show loading notification
+        Swal.fire({
+          title: "অপেক্ষা করুন",
+          text: "ছবি কম্প্রেস করা হচ্ছে...",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        // Compress the image
+        const compressedFile = await compressImage(file);
+
+        console.log(
+          `Original size: ${(file.size / 1024).toFixed(
+            2
+          )}KB, Compressed size: ${(compressedFile.size / 1024).toFixed(2)}KB`
+        );
+
+        // Update form data with compressed image
+        setFormData((prev) => ({
+          ...prev,
+          image: compressedFile,
+        }));
+
+        // Show success message
+        Swal.fire({
+          title: "সফল",
+          text: `ছবি সফলভাবে কম্প্রেস করা হয়েছে। (${(
+            compressedFile.size / 1024
+          ).toFixed(2)}KB)`,
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      } catch (error) {
+        console.error("Error compressing image:", error);
         Swal.fire({
           title: "ত্রুটি",
-          text: "ছবির আকার 20KB এর বেশি হতে পারবে না।",
+          text: "ছবি কম্প্রেস করতে সমস্যা হয়েছে।",
           icon: "error",
         });
-        return;
       }
-      setFormData((prev) => ({
-        ...prev,
-        image: file,
-      }));
     }
   };
+  // const handleFileUpload = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     if (file.size > 30 * 1024) {
+  //       Swal.fire({
+  //         title: "ত্রুটি",
+  //         text: "ছবির আকার 20KB এর বেশি হতে পারবে না।",
+  //         icon: "error",
+  //       });
+  //       return;
+  //     }
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       image: file,
+  //     }));
+  //   }
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
