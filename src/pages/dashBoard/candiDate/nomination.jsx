@@ -4,7 +4,6 @@ import Swal from "sweetalert2";
 import { useUserData } from "../../../hooks/useUserData";
 
 const Nomination = () => {
-  // const {userData}=useUserDa
   const { id } = useParams();
   const [electionPosts, setElectionPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +40,7 @@ const Nomination = () => {
         return res.json();
       })
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         setElectionPosts(data.posts || []);
       })
       .catch((error) => {
@@ -98,6 +97,89 @@ const Nomination = () => {
     });
   };
 
+  const handleCancelNomination = (postId) => {
+    clearMessages();
+  
+    Swal.fire({
+      title: "আপনি কি নিশ্চিত?",
+      text: "আপনি কি সত্যিই আপনার অনুরোধ বাতিল করতে চান?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "হ্যাঁ, বাতিল করি",
+      cancelButtonText: "না, থাক",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Try the exact URL format you mentioned
+        fetch(
+          `https://bnp-api-9oht.onrender.com/election/request-withdrawal/candidate/${postId}/cancel`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            // You may need to include a body if the API expects one
+            body: JSON.stringify({
+              postId: postId,
+              userId: loggedInUserId
+            }),
+          }
+        )
+          .then(async (res) => {
+            // Log the complete response for debugging
+            console.log("Cancel nomination response status:", res.status);
+            
+            if (!res.ok) {
+              const errorData = await res.json().catch(e => ({}));
+              console.log("Error data:", errorData);
+              throw errorData;
+            }
+            return res.json();
+          })
+          .then((data) => {
+            console.log("Cancel success data:", data);
+            setSuccessMessage("আপনার অনুরোধ বাতিল করা হয়েছে!");
+            fetchElectionDetails();
+          })
+          .catch((error) => {
+            console.error("Complete error object:", error);
+            
+            // Try an alternative endpoint if the first one fails
+            return fetch(
+              `https://bnp-api-9oht.onrender.com/election/cancel-nomination/${postId}/cancel`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                  postId: postId
+                }),
+              }
+            )
+              .then(async (res) => {
+                if (!res.ok) {
+                  const fallbackErrorData = await res.json().catch(e => ({}));
+                  throw fallbackErrorData;
+                }
+                return res.json();
+              })
+              .then((data) => {
+                setSuccessMessage("আপনার অনুরোধ বাতিল করা হয়েছে!");
+                fetchElectionDetails();
+              })
+              .catch((fallbackError) => {
+                console.error("Error canceling nomination (fallback):", fallbackError);
+                setErrorMessage(
+                  "অনুরোধ বাতিল করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।"
+                );
+              });
+          });
+      }
+    });
+  };
+
   const handleWithdrawal = (postId) => {
     clearMessages();
 
@@ -145,7 +227,6 @@ const Nomination = () => {
     console.log({ post });
     if (!post.nominees) return null;
     return post.nominees.find((nominee) => nominee.userId === loggedInUserId);
-    // console.log(nominiStatus);
   };
 
   const renderActionButton = (post) => {
@@ -168,7 +249,7 @@ const Nomination = () => {
                 <span>অপেক্ষমান</span>
                 <button
                   className="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                  onClick={() => handleWithdrawal(post.id)}
+                  onClick={() => handleCancelNomination(post.id)}
                 >
                   ক্যান্সেল
                 </button>

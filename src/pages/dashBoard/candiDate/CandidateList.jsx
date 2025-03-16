@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 const CandidateList = () => {
   const [elections, setElections] = useState([]);
@@ -33,7 +34,10 @@ const CandidateList = () => {
   }, []);
 
   if (loading) {
-    return <p>তথ্য লোড হচ্ছে...</p>;
+    return <p><UniversalLoading
+    text="তথ্য লোড হচ্ছে" 
+    
+    /></p>;
   }
 
   if (errorMessage) {

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import UpdateProfile from "../updateProfile/updateProfile";
 import { useUserData } from "../../../hooks/useUserData";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 const MyProfile = () => {
   const { userData, loading, error, refetch } = useUserData();
@@ -26,8 +27,11 @@ const MyProfile = () => {
 
   if (loading)
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500 text-lg">Loading profile...</p>
+      <div >
+          <UniversalLoading
+  text="প্রোফাইল লোড হচ্ছে" 
+
+/>
       </div>
     );
   if (error)

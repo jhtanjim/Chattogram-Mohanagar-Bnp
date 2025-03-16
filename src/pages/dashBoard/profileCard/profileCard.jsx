@@ -1,39 +1,196 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Barcode from "react-barcode";
-// import { FaDownload } from "react-icons/fa";
-// import jsPDF from "jspdf";
-// import html2canvas from "html2canvas";
 import { useUserData } from "../../../hooks/useUserData";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 const ProfileCard = () => {
-  const { userData } = useUserData(); // Fetch user data from context
-  const cardRef = useRef(); // Reference to the ID card
+  const { userData, refetchUserData } = useUserData();
+  const cardRef = useRef();
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [transactionId, setTransactionId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(() => {
+    // Check if there's a stored submission state
+    const storedState = localStorage.getItem("bnp_payment_processing");
+    return storedState === "true";
+  });
+  const [paymentError, setPaymentError] = useState("");
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  // Function to download the ID card as a PDF
-  // const downloadPDF = () => {
-  //   const cardElement = cardRef.current;
+  // Effect to handle the payment processing state
+  useEffect(() => {
+    if (isSubmitting) {
+      localStorage.setItem("bnp_payment_processing", "true");
+    } else {
+      localStorage.removeItem("bnp_payment_processing");
+    }
+  }, [isSubmitting]);
 
-  //   html2canvas(cardElement, { scale: 2, useCORS: true }).then((canvas) => {
-  //     const imgData = canvas.toDataURL("image/png");
-  //     const pdf = new jsPDF("portrait", "pt", "a4");
+  // Effect to check payment status when component mounts
+  useEffect(() => {
+    const checkPaymentStatus = async () => {
+      if (isSubmitting && !userData?.hasPaidForIdCard) {
+        try {
+          // Periodically check if the payment has been processed
+          const timer = setInterval(async () => {
+            await refetchUserData();
+            if (userData?.hasPaidForIdCard) {
+              clearInterval(timer);
+              setIsSubmitting(false);
+              setPaymentSuccess(true);
+            }
+          }, 5000); // Check every 5 seconds
+          
+          // Clean up the interval when component unmounts
+          return () => clearInterval(timer);
+        } catch (error) {
+          console.error("Error checking payment status:", error);
+          setIsSubmitting(false);
+        }
+      }
+    };
+    
+    checkPaymentStatus();
+  }, [isSubmitting, userData, refetchUserData]);
 
-  //     const imgProps = pdf.getImageProperties(imgData);
-  //     const pdfWidth = pdf.internal.pageSize.getWidth();
-  //     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-  //     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-  //     pdf.save(`${userData?.fullName}_ID_Card.pdf`);
-  //   });
-  // };
+  const handlePaymentSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setPaymentError("");
+    
+    try {
+      const response = await fetch(
+        "https://bnp-api-9oht.onrender.com/user/id-card/payment",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`
+          },
+          body: JSON.stringify({ transactionId: transactionId })
+        }
+      );
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || "Payment verification failed");
+      }
+      
+      // Store the transaction ID for reference
+      localStorage.setItem("bnp_transaction_id", transactionId);
+      
+      setPaymentSuccess(true);
+      setTimeout(() => {
+        setShowPaymentModal(false);
+        refetchUserData(); // Refresh user data to update hasPaidForIdCard status
+      }, 2000);
+    } catch (error) {
+      setPaymentError(error.message || "Payment verification failed");
+      setIsSubmitting(false);
+    }
+  };
 
   if (!userData) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500 text-lg">Loading profile...</p>
+      <div>
+        <UniversalLoading text="আইডি কার্ড লোড হচ্ছে" />
       </div>
     );
   }
 
+  // If payment is being processed, show waiting message
+  if (isSubmitting && !userData.hasPaidForIdCard) {
+    return (
+      <div className="max-w-[700px] lg:mx-auto mx-4 my-10 text-center">
+        <div className="bg-white p-6 rounded-lg border border-gray-300 shadow-md">
+          <h2 className="text-2xl font-bold text-red-700 mb-4">আইডি কার্ড পেমেন্ট প্রক্রিয়াধীন</h2>
+          <div className="mb-6">
+            {/* <UniversalLoading text="আপনার পেমেন্ট যাচাই করা হচ্ছে" /> */}
+            <p className="mt-4">আপনার পেমেন্ট যাচাই করা হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন।</p>
+            <p className="mt-2 text-sm">ট্রানজেকশন আইডি: {localStorage.getItem("bnp_transaction_id") || transactionId}</p>
+          </div>
+          <h1
+            // onClick={() => setIsSubmitting(false)}
+            className="bg-red-500  text-white font-bold py-2 px-6 rounded-lg"
+          >
+            অপেক্ষা করুন
+          </h1>
+        </div>
+      </div>
+    );
+  }
+
+  // If user hasn't paid for ID card, show payment button
+  if (!userData.hasPaidForIdCard) {
+    return (
+      <div className="max-w-[700px] lg:mx-auto mx-4 my-10 text-center">
+        <div className="bg-white p-6 rounded-lg border border-gray-300 shadow-md">
+          <h2 className="text-2xl font-bold text-red-700 mb-4">আইডি কার্ড পেমেন্ট</h2>
+          <p className="mb-6">আপনার আইডি কার্ড দেখতে পেমেন্ট করুন</p>
+          <button
+            onClick={() => setShowPaymentModal(true)}
+            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg"
+          >
+            পেমেন্ট করুন
+          </button>
+        </div>
+
+        {/* Payment Modal */}
+        {showPaymentModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+              <h3 className="text-xl font-bold mb-4">আইডি কার্ড পেমেন্ট</h3>
+              
+              {paymentSuccess ? (
+                <div className="text-center text-green-600 mb-4">
+                  <p className="font-bold">পেমেন্ট সফল হয়েছে!</p>
+                  <p>আপনার আইডি কার্ড প্রদর্শিত হবে...</p>
+                </div>
+              ) : (
+                <form onSubmit={handlePaymentSubmit}>
+                  <div className="mb-4">
+                    <label className="block mb-2 font-bold">ট্রানজেকশন আইডি</label>
+                    <input
+                      type="text"
+                      value={transactionId}
+                      onChange={(e) => setTransactionId(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                      required
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  
+                  {paymentError && (
+                    <div className="text-red-600 mb-4">{paymentError}</div>
+                  )}
+                  
+                  <div className="flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setShowPaymentModal(false)}
+                      className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                      disabled={isSubmitting}
+                    >
+                      বাতিল
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+                    >
+                      {isSubmitting ? "অপেক্ষা করুন..." : "জমা দিন"}
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // If user has paid, show the ID card
   return (
     <div className="max-w-[700px] lg:mx-auto mx-4 my-10">
       <div
@@ -96,13 +253,13 @@ const ProfileCard = () => {
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">সদস্য ধরন</span>
               <span className="text-green-600">
-                {/* : {userData.userType || "N/A"} */}: সাধারণ সদস্য
+                : সাধারণ সদস্য
               </span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
               <span className="min-w-[100px]">ইউনিট</span>
               <span className="text-red-600">
-                {/* : {userData.mohanagar || "N/A"} */}: চট্টগ্রাম মহানগর
+                : চট্টগ্রাম মহানগর
               </span>
             </div>
             <div className="flex flex-wrap md:flex-nowrap gap-4">
@@ -133,7 +290,6 @@ const ProfileCard = () => {
         </div>
 
         {/* Decorative Paddy */}
-        {/* Decorative Paddy */}
         <div className="absolute bottom-0 right-0 w-48 h-48 md:w-64 md:h-64 opacity-20 pointer-events-none">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/0/02/Bangladesh_Nationalist_Party_Election_Symbol.svg"
@@ -142,16 +298,6 @@ const ProfileCard = () => {
           />
         </div>
       </div>
-
-      {/* <div className="my-4">
-        <button
-          className="w-full text-green-700 hover:text-yellow-500 font-bold py-2 px-4 rounded-lg"
-          onClick={downloadPDF}
-        >
-          <FaDownload className="inline-block mr-2" />
-          আইডি কার্ড ডাউনলোড
-        </button>
-      </div> */}
     </div>
   );
 };

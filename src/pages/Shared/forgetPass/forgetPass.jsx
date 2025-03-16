@@ -1,13 +1,30 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 const ForgetPass = () => {
   const [email, setEmail] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Reset previous states
+    setError("");
+    setSuccess("");
+    
+    // Validate email
+    if (!email || !email.includes('@')) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Prevent multiple submissions
+    if (loading) return;
 
     try {
+      setLoading(true);
       const response = await fetch(
         "https://bnp-api-9oht.onrender.com/auth/forgot-password",
         {
@@ -18,50 +35,51 @@ const ForgetPass = () => {
           body: JSON.stringify({ email }),
         }
       );
-
+      
       const data = await response.json();
-      console.log(data);
+
       if (response.ok) {
-        alert("Password reset link sent to your email!");
+        setSuccess("Password reset link sent to your email!");
+        // Optional: Clear email field after success
+        setEmail("");
       } else {
-        alert(data.message || "Something went wrong, please try again.");
+        setError(data.message || "Something went wrong, please try again.");
       }
     } catch (error) {
-      alert("Network error, please try again later.");
+      setError("Network error, please try again later.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div
-      style={{
-        maxWidth: "350px",
-        margin: "50px auto",
-        padding: "30px",
-        boxSizing: "border-box",
-      }}
+    <div 
+      className="max-w-md mx-auto my-12 p-6 bg-white rounded-lg shadow-md"
     >
-      <h2
-        style={{
-          fontSize: "24px",
-          fontWeight: "600",
-          marginBottom: "20px",
-          textAlign: "center",
-          color: "#333",
-          letterSpacing: "1px",
-        }}
+      <h2 
+        className="text-2xl font-semibold text-center text-gray-800 mb-4"
       >
         Forgot Password
       </h2>
-      <div
-        style={{
-          width: "50px",
-          height: "4px",
-          background: "#3498db",
-          margin: "0 auto 30px",
-        }}
-      ></div>
+      
+      <div className="h-1 w-16 bg-blue-500 mx-auto mb-6"></div>
+      
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "25px", position: "relative" }}>
+        {/* Error Message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        
+        {/* Success Message */}
+        {success && (
+          <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+            {success}
+          </div>
+        )}
+        
+        <div className="relative mb-6">
           <input
             id="email"
             type="email"
@@ -70,52 +88,37 @@ const ForgetPass = () => {
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             required
-            style={{
-              width: "100%",
-              padding: "12px 16px",
-              fontSize: "16px",
-              color: "#333",
-              border: `2px solid ${isFocused ? "#3498db" : "#ddd"}`,
-              borderRadius: "4px",
-              outline: "none",
-              transition: "all 0.3s",
-              backgroundColor: "transparent",
-            }}
+            className={`
+              w-full px-4 py-3 border rounded-md 
+              transition-all duration-300
+              ${isFocused ? 'border-blue-500' : 'border-gray-300'}
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+            `}
           />
           <label
             htmlFor="email"
-            style={{
-              position: "absolute",
-              left: "16px",
-              top: email || isFocused ? "-10px" : "12px",
-              fontSize: email || isFocused ? "12px" : "16px",
-              color: isFocused ? "#3498db" : "#999",
-              padding: "0 4px",
-              backgroundColor: "white",
-              transition: "all 0.3s",
-              pointerEvents: "none",
-            }}
+            className={`
+              absolute left-4 transition-all duration-300
+              ${email || isFocused 
+                ? 'top-0 text-xs text-blue-500 bg-white px-1 -translate-y-1/2' 
+                : 'top-1/2 -translate-y-1/2 text-base text-gray-500'}
+            `}
           >
             Email
           </label>
         </div>
+        
         <button
           type="submit"
-          style={{
-            width: "100%",
-            padding: "12px",
-            backgroundColor: "transparent",
-            color: "#3498db",
-            border: "2px solid #3498db",
-            borderRadius: "4px",
-            fontSize: "16px",
-            fontWeight: "600",
-            cursor: "pointer",
-            transition: "all 0.3s",
-            outline: "none",
-          }}
+          disabled={loading}
+          className={`
+            w-full py-3 rounded-md text-white font-semibold transition-colors
+            ${loading 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : 'bg-blue-500 hover:bg-blue-600'}
+          `}
         >
-          Reset Password
+          {loading ? 'Sending...' : 'Reset Password'}
         </button>
       </form>
     </div>

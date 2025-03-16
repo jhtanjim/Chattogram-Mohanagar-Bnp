@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Swal from "sweetalert2";
+import UniversalLoading from "../../Components/UniversalLoading";
 
 // Function to generate random math problem
 const generateMathProblem = () => {
@@ -32,6 +33,7 @@ const SignUp = () => {
   const [filteredWards, setFilteredWards] = useState([]);
   const [electionCenters, setElectionCenters] = useState([]);
   const [filteredElectionCenters, setFilteredElectionCenters] = useState([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -260,10 +262,21 @@ const SignUp = () => {
   };
 
   // Handle submit
+  // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validation for NID
+    // Validate password length
+    if (formData.password.length < 8) {
+      Swal.fire({
+        title: "ত্রুটি",
+        text: "পাসওয়ার্ড কমপক্ষে ৮ অক্ষরের হতে হবে!",
+        icon: "error",
+      });
+      return;
+    }
+
+    // Validate NID
     if (!formData.nid) {
       Swal.fire({
         title: "ত্রুটি",
@@ -292,6 +305,9 @@ const SignUp = () => {
       });
       return;
     }
+
+    // Set submitting state
+    setIsSubmitting(true);
 
     // Prepare form data to send
     const data = new FormData();
@@ -351,11 +367,16 @@ const SignUp = () => {
         icon: "error",
       });
       console.error("Error submitting form:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <div><UniversalLoading 
+    text="SignIn Loading..." 
+  
+  /></div>;
   }
 
   if (error) {
@@ -652,13 +673,13 @@ const SignUp = () => {
         {/* Other form fields... */}
 
         <div className="mt-6">
-          <button
-            disabled={!capVal}
-            type="submit"
-            className="w-full bg-blue-500 text-white py-3 px-5 rounded-lg hover:bg-blue-600"
-          >
-            সাইন আপ করুন
-          </button>
+        <button
+          disabled={!capVal || isSubmitting}
+          type="submit"
+          className="w-full bg-blue-500 text-white py-3 px-5 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+        >
+          {isSubmitting ? 'সাইন আপ করা হচ্ছে...' : 'সাইন আপ করুন'}
+        </button>
         </div>
         <p className="py-4 text-center">
           অ্যাকাউন্ট আছে?

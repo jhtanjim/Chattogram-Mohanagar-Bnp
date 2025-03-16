@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 const NoticeBoard = () => {
   const [notices, setNotices] = useState([]);
@@ -49,9 +50,11 @@ const NoticeBoard = () => {
 
   if (loading) {
     return (
-      <div className="my-20 text-center">
-        <h1 className="font-bold text-xl">লোড হচ্ছে...</h1>
-      </div>
+ <div >
+          <UniversalLoading
+  text=" নোটিশ বোর্ড লোড হচ্ছে...." 
+
+/>      </div>
     );
   }
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 const ElectionResult = () => {
   const [elections, setElections] = useState([]);
@@ -31,6 +32,7 @@ const ElectionResult = () => {
         }
 
         const data = await response.json();
+        console.log(data);
         setElections(data);
       } catch (error) {
         console.error("Error fetching elections:", error);
@@ -45,9 +47,9 @@ const ElectionResult = () => {
 
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <p className="text-blue-600">তথ্য লোড হচ্ছে...</p>
-      </div>
+      <div >
+    <UniversalLoading text="তথ্য লোড হচ্ছে..." />
+        </div>
     );
   }
 

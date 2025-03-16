@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 export default function Elections() {
   const [elections, setElections] = useState([]); // State to store all elections
@@ -39,37 +40,38 @@ export default function Elections() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h1 style={{ textAlign: "center", color: "red" }}>চলমান নির্বাচন সমূহ</h1>
-
       {loading ? (
-        <p style={{ textAlign: "center", color: "blue" }}>তথ্য লোড হচ্ছে...</p>
+        <div style={{ textAlign: "center", color: "blue" }}>
+          <UniversalLoading text="তথ্য লোড হচ্ছে..." />
+        </div>
       ) : errorMessage ? (
         <p style={{ textAlign: "center", color: "red" }}>{errorMessage}</p>
       ) : elections.length > 0 ? (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#90ee90", textAlign: "left" }}>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                নির্বাচন শিরোনাম
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                পদের নাম
-              </th>
-              <th style={{ padding: "10px", border: "1px solid #ddd" }}>
-                বিস্তারিত
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {elections.map((election) =>
-              election.posts.map((post) => (
-                <tr key={post.id} style={{ backgroundColor: "#d4f4d4" }}>
+        <>
+          <h1 style={{ textAlign: "center", color: "red" }}>
+            চলমান নির্বাচন সমূহ
+          </h1>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ backgroundColor: "#90ee90", textAlign: "left" }}>
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+                  নির্বাচন শিরোনাম
+                </th>
+                {/* <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+                  পদের নাম
+                </th> */}
+                <th style={{ padding: "10px", border: "1px solid #ddd" }}>
+                  বিস্তারিত
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {elections.map((election) => (
+                <tr key={election.id} style={{ backgroundColor: "#d4f4d4" }}>
                   <td style={{ padding: "10px", border: "1px solid #ddd" }}>
                     {election.title}
                   </td>
-                  <td style={{ padding: "10px", border: "1px solid #ddd" }}>
-                    {post.name}
-                  </td>
+                
                   <td
                     style={{
                       padding: "10px",
@@ -92,10 +94,10 @@ export default function Elections() {
                     </Link>
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ))}
+            </tbody>
+          </table>
+        </>
       ) : (
         <p style={{ textAlign: "center", color: "red" }}>
           কোন তথ্য পাওয়া যায়নি।

@@ -7,14 +7,59 @@ import audio from "../../../assets/song/prothom_bangladesh.mp3";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import PressRelease from "../../Shared/pressRelease/pressRelease";
+import khaledazia from "../../../../src/assets/khaledajia.jpg"
+import tareqzia from "../../../../src/assets/TAREQZIa.jpg"
+import ziaURRAHMAN  from "../../../../src/assets/ziaURRAHMAN.jpg"
 const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(""); // Manage search input
   const [searchResults, setSearchResults] = useState([]); // Manage search results
   const [isPlaying, setIsPlaying] = useState(true);
+  const [autoplayAttempted, setAutoplayAttempted] = useState(false);
   const audioRef = useRef(null);
 
   // Play music when component mounts
+
+  // Add this useEffect to your component
+  useEffect(() => {
+    // Add event listener for user interaction
+    const handleUserInteraction = () => {
+      if (audioRef.current && !audioRef.current.playing) {
+        audioRef.current
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+            // Remove event listeners after successful play
+            document.removeEventListener("click", handleUserInteraction);
+            document.removeEventListener("touchstart", handleUserInteraction);
+            document.removeEventListener("keydown", handleUserInteraction);
+          })
+          .catch((error) => {
+            console.log("Play failed:", error);
+          });
+      }
+    };
+
+    // Add event listeners for user interaction
+    document.addEventListener("click", handleUserInteraction);
+    document.addEventListener("touchstart", handleUserInteraction);
+    document.addEventListener("keydown", handleUserInteraction);
+
+    // Try to play immediately (this will likely fail due to browser policies)
+    if (audioRef.current) {
+      audioRef.current.play().catch((error) => {
+        console.log("Autoplay failed (expected):", error);
+        // We'll rely on the event listeners above
+      });
+    }
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener("click", handleUserInteraction);
+      document.removeEventListener("touchstart", handleUserInteraction);
+      document.removeEventListener("keydown", handleUserInteraction);
+    };
+  }, []);
   const toggleMusic = () => {
     if (audioRef.current) {
       if (isPlaying) {
@@ -52,48 +97,42 @@ const Home = () => {
   return (
     <div>
       {/* Banner with Carousel */}
-      <div className="relative">
+      <div className="relative ">
         {/* Background Music (Hidden) */}
         <audio ref={audioRef} src={audio} loop />
 
         {/* Carousel */}
         <Carousel autoPlay infiniteLoop showThumbs={false}>
-          <div>
+        <div>
             <img
-              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
-              alt="খালেদা জিয়া"
-              className="w-full lg:h-[650px] object-cover"
+              src={ziaURRAHMAN }
+              alt="ziaURRAHMAN"
+              className="w-full lg:h-[800px] "
               width={1200}
               height={650}
             />
           </div>
           <div>
             <img
-              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
+              src={ khaledazia}
               alt="খালেদা জিয়া"
-              className="w-full lg:h-[650px] object-cover"
+              className="w-full lg:h-[800px] "
               width={1200}
               height={650}
             />
           </div>
           <div>
             <img
-              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
-              alt="খালেদা জিয়া"
-              className="w-full lg:h-[650px] object-cover"
+              src={tareqzia}
+              alt="tareqzia"
+              className="w-full lg:h-[800px] "
               width={1200}
               height={650}
             />
           </div>
-          <div>
-            <img
-              src="https://api.bnpbd.org/api/upload/images/bnp-chief-khaleda-zia-release-9244.jpg"
-              alt="খালেদা জিয়া"
-              className="w-full lg:h-[650px] object-cover"
-              width={1200}
-              height={650}
-            />
-          </div>
+        
+        
+         
           {/* Add more slides here */}
         </Carousel>
 

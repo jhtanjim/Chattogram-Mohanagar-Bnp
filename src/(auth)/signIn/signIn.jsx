@@ -8,6 +8,7 @@ const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,6 +22,8 @@ const SignIn = () => {
       });
       return;
     }
+
+    setIsSubmitting(true); // Prevent multiple submissions
 
     try {
       const response = await fetch(
@@ -43,8 +46,8 @@ const SignIn = () => {
           text: "লগইন সফল হয়েছে!",
           confirmButtonColor: "#16A34A",
         });
-        login(result.token, result.user); // Log in the user using the context's login method
-        navigate("/dashBoard"); // Navigate to the home page
+        login(result.token, result.user); // Log in the user using context
+        navigate("/dashBoard"); // Redirect after successful login
       } else {
         Swal.fire({
           icon: "error",
@@ -62,6 +65,8 @@ const SignIn = () => {
         confirmButtonColor: "#d33",
       });
     }
+
+    setIsSubmitting(false); // Reset submit state
   };
 
   return (
@@ -108,25 +113,24 @@ const SignIn = () => {
         </div>
 
         <button
-          className="bg-[#16A34A] text-white p-2 w-full rounded hover:bg-[#F5CF0D] hover:text-red-500 font-bold"
+          className="bg-[#16A34A] text-white p-2 w-full rounded hover:bg-[#F5CF0D] hover:text-red-500 font-bold disabled:opacity-50"
           type="submit"
+          disabled={isSubmitting}
         >
-          লগইন করুন &rarr;
+          {isSubmitting ? "লগইন করা হচ্ছে..." : "লগইন করুন ➤"}
         </button>
+
         <p className="py-1">
-          <Link
-            to="/forget-password
-"
-            className="text-green-800 font-semibold"
-          >
+          <Link to="/forget-password" className="text-green-800 font-semibold">
             পাসওয়ার্ড ভুলে গেছেন?
           </Link>
         </p>
+
         <p className="py-4 text-center">
-          অ্যাকাউন্ট নেই?
-          <a href="/signUp" className="text-blue-800 font-semibold">
+          অ্যাকাউন্ট নেই?{" "}
+          <Link to="/signUp" className="text-blue-800 font-semibold">
             সাইন আপ করুন
-          </a>
+          </Link>
         </p>
       </form>
     </div>
