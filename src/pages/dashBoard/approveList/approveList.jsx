@@ -42,7 +42,7 @@ const ApproveList = () => {
         },
       });
       const data = await response.json();
-
+console.log(data)
       if (response.ok) {
         setUsers(data.users);
       } else {
@@ -156,7 +156,7 @@ const ApproveList = () => {
                     <td className="border p-2">
                       {user.electionCenter || "N/A"}
                     </td>
-                    <td className="border p-2">{user.country || "N/A"}</td>
+                    <td className="border p-2">{user.localReference || "N/A"}</td>
                     <td className="border p-2">
                       <div className="flex justify-center gap-2">
                         <button

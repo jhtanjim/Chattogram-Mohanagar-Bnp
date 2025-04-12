@@ -82,7 +82,13 @@ const DashBoard = () => {
             <FaUser className="text-6xl mx-auto text-green-600 mb-4" />
             <h2 className="text-2xl font-bold text-gray-800">প্রোফাইল</h2>
           </Link>
-
+          <Link
+                to="/noticeBoard"
+                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 text-center"
+              >
+                <MdMessage className="text-6xl mx-auto text-green-600 mb-4" />
+                <h2 className="text-2xl font-bold text-gray-800">বিজ্ঞপ্তি দেখুন</h2>
+              </Link>
           {isGeneralUser && (
             <>
               {/* ID Card */}
@@ -92,13 +98,7 @@ const DashBoard = () => {
               </Link>
 
               {/* Notice Board */}
-              <Link
-                to="/noticeBoard"
-                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 text-center"
-              >
-                <MdMessage className="text-6xl mx-auto text-green-600 mb-4" />
-                <h2 className="text-2xl font-bold text-gray-800">বিজ্ঞপ্তি দেখুন</h2>
-              </Link>
+              
 
               {/* Elections */}
               <Link

@@ -113,11 +113,11 @@ const SignIn = () => {
         </div>
 
         <button
-          className="bg-[#16A34A] text-white p-2 w-full rounded hover:bg-[#F5CF0D] hover:text-red-500 font-bold disabled:opacity-50"
+          className="bg-[#16A34A] duration-200 text-white p-2 w-full rounded hover:bg-[#F5CF0D] hover:text-red-500 font-bold disabled:opacity-50"
           type="submit"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "লগইন করা হচ্ছে..." : "লগইন করুন ➤"}
+          {isSubmitting ? "লগইন করা হচ্ছে..." : "লগইন করুন "}
         </button>
 
         <p className="py-1">

@@ -25,6 +25,8 @@ import PressRelease from "../pages/Shared/pressRelease/pressRelease";
 import SinglePressRelease from "../pages/Shared/pressRelease/SinglePressRelease ";
 import ElectionResult from "../pages/dashBoard/electionResult/electionResult";
 import ElectionRes from "../pages/dashBoard/electionResult/electionRes";
+import Dofa from "../pages/Shared/Dofa/Dofa";
+import SingleDofa from "../pages/Shared/Dofa/SingleDofa";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -97,6 +99,14 @@ export const router = createBrowserRouter([
       {
         path: "/pressRelease/:id",
         element: <SinglePressRelease />,
+      },
+      {
+        path: "/dofa",
+        element: <Dofa />,
+      },
+      {
+        path: "/dofa/:id",
+        element: <SingleDofa />,
       },
 
       {

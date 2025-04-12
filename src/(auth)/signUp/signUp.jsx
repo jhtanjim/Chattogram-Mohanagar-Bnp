@@ -656,9 +656,20 @@ const SignUp = () => {
         </div>
 
         {/* CAPTCHA */}
-        <div className="mb-4">
+        <div className="my-4">
           <label className="block text-sm font-semibold">
-            CAPTCHA: {mathProblem.question}
+            {/* CAPTCHA: {mathProblem.question} */}
+            <div className="flex items-center gap-2">
+  <span className="text-sm font-bold">CAPTCHA: {mathProblem.question}</span>
+  <span className="text-sm font-bold">=</span>
+  {/* <input
+    type="text"
+    value={capVal}
+    onChange={(e) => setCapVal(e.target.value)}
+    className="border rounded-lg px-2 py-1 w-16 text-center"
+  /> */}
+  <span className="text-sm font-bold text-red-500">?</span>
+</div>
           </label>
           <input
             type="number"
@@ -676,7 +687,7 @@ const SignUp = () => {
         <button
           disabled={!capVal || isSubmitting}
           type="submit"
-          className="w-full bg-blue-500 text-white py-3 px-5 rounded-lg hover:bg-blue-600 disabled:opacity-50"
+          className="bg-[#16A34A] duration-200 text-white p-2 w-full rounded hover:bg-[#F5CF0D] hover:text-red-500 font-bold "
         >
           {isSubmitting ? 'সাইন আপ করা হচ্ছে...' : 'সাইন আপ করুন'}
         </button>

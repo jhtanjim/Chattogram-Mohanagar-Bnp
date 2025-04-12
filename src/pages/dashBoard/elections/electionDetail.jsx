@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import UniversalLoading from "../../../Components/UniversalLoading";
 
 export default function ElectionDetail() {
   const [electionDetail, setElectionDetail] = useState(null);
@@ -130,7 +131,7 @@ export default function ElectionDetail() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div><UniversalLoading/></div>;
   }
 
   if (errorMessage) {
