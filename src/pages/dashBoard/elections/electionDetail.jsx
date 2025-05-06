@@ -27,20 +27,15 @@ export default function ElectionDetail() {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log(data);
         setElectionDetail(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching election detail:", error);
-        setErrorMessage(
-          "ইলেকশন ডেটা লোড করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।"
-        );
+        setErrorMessage("ইলেকশন ডেটা লোড করতে ব্যর্থ হয়েছে। পুনরায় চেষ্টা করুন।");
         setLoading(false);
       });
   }, [id, userToken]);
 
-  // Function to check if current time is within election period
   const isVotingPeriod = () => {
     if (!electionDetail) return false;
 
@@ -56,7 +51,6 @@ export default function ElectionDetail() {
       setErrorMessage("");
       setSuccessMessage("");
 
-      // Check if outside voting period
       if (!isVotingPeriod()) {
         Swal.fire({
           icon: "error",
@@ -67,7 +61,6 @@ export default function ElectionDetail() {
         return;
       }
 
-      // Check if the user has already voted for this candidate
       if (votedCandidates.includes(candidateId)) {
         Swal.fire({
           icon: "error",
@@ -100,16 +93,12 @@ export default function ElectionDetail() {
         });
         const updatedVotedCandidates = [...votedCandidates, candidateId];
         setVotedCandidates(updatedVotedCandidates);
-        localStorage.setItem(
-          "votedCandidates",
-          JSON.stringify(updatedVotedCandidates)
-        );
+        localStorage.setItem("votedCandidates", JSON.stringify(updatedVotedCandidates));
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "Voting failed");
       }
     } catch (error) {
-      console.error("Voting failed:", error);
       Swal.fire({
         icon: "error",
         title: "ভোট দিতে ব্যর্থ হয়েছে",
@@ -119,7 +108,6 @@ export default function ElectionDetail() {
     }
   };
 
-  // Function to get button text based on various conditions
   const getButtonText = (candidateId) => {
     if (votedCandidates.includes(candidateId)) {
       return "ভোট দেওয়া হয়েছে";
@@ -131,75 +119,74 @@ export default function ElectionDetail() {
   };
 
   if (loading) {
-    return <div><UniversalLoading/></div>;
+    return <UniversalLoading />;
   }
 
   if (errorMessage) {
-    return <p className="text-red-600">{errorMessage}</p>;
+    return <p className="text-red-600 text-center">{errorMessage}</p>;
   }
 
   if (!electionDetail) {
-    return <p className="text-red-600">ডেটা পাওয়া যায়নি।</p>;
+    return <p className="text-red-600 text-center">ডেটা পাওয়া যায়নি।</p>;
   }
 
   const currentPost = electionDetail.posts[currentPage - 1] || {};
 
   return (
-    <div className="font-sans text-center my-20">
-      <h3 className="text-red-600 text-lg font-semibold">
+    <div className="font-sans px-4 md:px-10 my-10 max-w-6xl mx-auto">
+      <h3 className="text-red-600 text-center text-xl font-semibold mb-4">
         আপনার প্রার্থী নির্বাচন করুন
       </h3>
 
-      {currentPost &&
-        currentPost.candidates &&
-        currentPost.candidates.length > 0 && (
-          <>
-            <h4 className="text-lg font-medium mt-2">
-              {currentPost.name} প্রার্থী
-            </h4>
+      {currentPost?.candidates?.length > 0 && (
+        <>
+          <h4 className="text-lg font-medium text-center mb-2">
+            {currentPost.name} প্রার্থী
+          </h4>
 
-            {successMessage && (
-              <p className="text-green-600 font-bold my-3">{successMessage}</p>
-            )}
+          {successMessage && (
+            <p className="text-green-600 font-bold my-3 text-center">{successMessage}</p>
+          )}
 
-            {errorMessage && (
-              <p className="text-red-600 font-bold my-3">{errorMessage}</p>
-            )}
+          {errorMessage && (
+            <p className="text-red-600 font-bold my-3 text-center">{errorMessage}</p>
+          )}
 
-            {currentPost.hasVoted ? (
-              <p className="text-blue-600 font-bold my-3">
-                আপনি ইতিমধ্যেই এই পোস্টের জন্য ভোট দিয়েছেন।
-              </p>
-            ) : (
-              <table className="mx-auto mt-5 border-collapse w-3/5">
+          {currentPost.hasVoted ? (
+            <p className="text-blue-600 font-bold my-3 text-center">
+              আপনি ইতিমধ্যেই এই পোস্টের জন্য ভোট দিয়েছেন।
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full table-auto border-collapse mt-5">
                 <thead>
                   <tr>
-                    <th className="border border-gray-300 px-4 py-2 bg-green-300">
-                      প্রার্থীর নাম
-                    </th>
-                    <th className="border border-gray-300 px-4 py-2 bg-green-300">
-                      ভোট দিন
-                    </th>
+                    <th className="border border-gray-300 px-4 py-2 bg-green-300">ছবি</th>
+                    <th className="border border-gray-300 px-4 py-2 bg-green-300">প্রার্থীর নাম</th>
+                    <th className="border border-gray-300 px-4 py-2 bg-green-300">ভোট দিন</th>
                   </tr>
                 </thead>
                 <tbody>
                   {currentPost.candidates.map((candidate, index) => (
                     <tr key={index}>
-                      <td className="border border-gray-300 px-4 py-2 bg-green-100">
+                      <td className="border border-gray-300 px-4 py-2">
+                        <img
+                          src={candidate.image}
+                          alt={candidate.fullName}
+                          className="w-16 h-16 object-cover rounded-full mx-auto"
+                        />
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2 text-center">
                         {candidate.fullName}
                       </td>
-                      <td className="border border-gray-300 px-4 py-2 bg-green-100">
+                      <td className="border border-gray-300 px-4 py-2 text-center">
                         <button
-                          onClick={() =>
-                            handleVote(currentPost.id, candidate.id)
-                          }
+                          onClick={() => handleVote(currentPost.id, candidate.id)}
                           disabled={
-                            votedCandidates.includes(candidate.id) ||
-                            !isVotingPeriod()
+                            votedCandidates.includes(candidate.id) || !isVotingPeriod()
                           }
-                          className={`px-4 py-2 rounded ${
-                            votedCandidates.includes(candidate.id) ||
-                            !isVotingPeriod()
+                          className={`px-4 py-2 rounded transition-all ${
+                            votedCandidates.includes(candidate.id) || !isVotingPeriod()
                               ? "bg-gray-400 text-gray-700 cursor-not-allowed"
                               : "bg-green-500 text-white hover:bg-green-600"
                           }`}
@@ -211,20 +198,19 @@ export default function ElectionDetail() {
                   ))}
                 </tbody>
               </table>
-            )}
-          </>
-        )}
+            </div>
+          )}
+        </>
+      )}
 
-      <div className="mt-5">
-        <p className="mb-3">
-          অন্যান্য পোস্টের প্রার্থীদের জন্য ভোট দিতে পরবর্তী পৃষ্ঠায় যান
-        </p>
-        <div className="space-x-2">
-          {electionDetail.posts.map((election, index) => (
+      <div className="mt-8 text-center">
+        <p className="mb-3">অন্যান্য পোস্টের প্রার্থীদের জন্য ভোট দিতে পরবর্তী পৃষ্ঠায় যান</p>
+        <div className="flex justify-center flex-wrap gap-2">
+          {electionDetail.posts.map((_, index) => (
             <button
               key={index}
               onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded border ${
+              className={`px-4 py-1 rounded border ${
                 currentPage === index + 1 ? "bg-gray-200" : "bg-white"
               } hover:bg-gray-300`}
             >

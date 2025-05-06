@@ -50,7 +50,6 @@ const ProfileCard = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setPaymentError("");
-    
     try {
       const response = await fetch(`${BASE_URL}/user/id-card/payment`, {
         method: "POST",
@@ -169,7 +168,8 @@ const ProfileCard = () => {
                 className={`bg-red-600 duration-300 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg`}
               >
                 Close
-              </button></Link>
+              </button>
+              </Link>
             </div>
           </form>
         </div>

@@ -34,10 +34,28 @@ const Home = () => {
   // Rest of the component remains the same as in the original code
 
   // Optional: Function to handle app download (since it was referenced but not implemented)
-  const handleAppDownload = (platform) => {
-    // Implement your app download logic here
-    console.log(`Downloading ${platform} app`);
-  };
+ // Update the handleAppDownload function in your Home component
+// const handleAppDownload = (platform) => {
+//   if (platform === "android") {
+//     // Direct link to download from Google Drive
+//     const downloadLink = "https://drive.google.com/uc?export=download&id=1oEZaRF2hkvkZRDAGTu2AwodGC8c1rv8r";
+    
+//     // Create an anchor element
+//     const a = document.createElement('a');
+//     a.href = downloadLink;
+//     a.download = "bnp-app.apk"; // Suggested name for the downloaded file
+//     document.body.appendChild(a);
+//     a.click();
+//     document.body.removeChild(a);
+    
+//     console.log("Downloading Android app");
+//   } else if (platform === "ios") {
+//     // iOS download logic (if you have an iOS version)
+//     console.log("iOS app download not available yet");
+//     // You could show a notification or alert here
+//     alert("iOS app is coming soon!");
+//   }
+// };
   // Play music when component mounts
 
   // Add this useEffect to your component
@@ -235,14 +253,14 @@ const Home = () => {
 
   {/* App Download Section (Always Visible) */}
   <div className="max-w-screen-xl lg:mx-auto mx-4 my-4 bg-green-50 rounded-xl p-6 shadow-md">
-  <div className="w-full bg-gray-50 p-4 rounded-lg">
+  <div className="w-full  p-4 rounded-lg">
       <h3 className="text-center  font-bold text-green-700 mb-4">
       ডাউনলোড ই-বিএনপি
      
       </h3>
       <div className="flex flex-row justify-center gap-3 max-w-md mx-auto">
         <button
-          onClick={() => handleAppDownload("ios")}
+          // onClick={() => handleAppDownload("ios")}
           className="flex-1 flex items-center justify-center bg-black text-white px-4 py-3 rounded-lg"
         >
           {/* Apple logo */}
@@ -254,19 +272,18 @@ const Home = () => {
             <span className="text-xs font-medium">App</span>
           </div>
         </button>
-        <button
-          onClick={() => handleAppDownload("android")}
-          className="flex-1 flex items-center justify-center bg-green-600 text-white px-4 py-3 rounded-lg"
+        <a
+         href="https://bnpctg.com/uploads/apk/E-BNP.apk" download="BnpCtg.apk" className="flex-1 flex items-center justify-center bg-white border text-green-600 px-4 py-3 rounded-lg"
         >
           {/* Android logo */}
           <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
             <path d="M7.2,16.8a.8.8,0,0,0,.8.8h.8v2.8a1.2,1.2,0,0,0,2.4,0V17.6h1.6v2.8a1.2,1.2,0,0,0,2.4,0V17.6H16a.8.8,0,0,0,.8-.8V8H7.2Zm-2-8.8A1.2,1.2,0,0,0,4,9.2v5.6a1.2,1.2,0,0,0,2.4,0V9.2A1.2,1.2,0,0,0,5.2,8M18.8,8a1.2,1.2,0,0,0-1.2,1.2v5.6a1.2,1.2,0,0,0,2.4,0V9.2A1.2,1.2,0,0,0,18.8,8M16.6,3.6l1.4-1.4a.4.4,0,0,0,0-.6.4.4,0,0,0-.6,0L15.8,3.2a6.6,6.6,0,0,0-7.6,0L6.6,1.6a.4.4,0,0,0-.6,0,.4.4,0,0,0,0,.6L7.4,3.6A5.7,5.7,0,0,0,5,8H19A5.7,5.7,0,0,0,16.6,3.6ZM9.6,6A.8.8,0,1,1,9,5,.8.8,0,0,1,9.6,6Zm4.8,0a.8.8,0,1,1-.8-.8A.8.8,0,0,1,14.4,6Z" />
           </svg>
-          <div className="flex flex-col items-start">
-            <span className="text-xs ">Android</span>
-            <span className="text-xs font-medium">App</span>
+          <div className="flex flex-col  items-start">
+            <span className="text-xs  font-medium">Android</span>
+            <span className="text-xs  font-medium">App</span>
           </div>
-        </button>
+        </a>
       </div>
     </div>
  </div>
