@@ -273,7 +273,7 @@ const Home = () => {
           </div>
         </button>
         <a
-         href="https://bnpctg.com/uploads/apk/BNP-CTG.apk" download="BnpCtg.apk" className="flex-1 flex items-center justify-center bg-white border text-green-600 px-4 py-3 rounded-lg"
+         href="https://bnpctg.com/uploads/apk/E-CTG.apk" download="BnpCtg.apk" className="flex-1 flex items-center justify-center bg-white border text-green-600 px-4 py-3 rounded-lg"
         >
           {/* Android logo */}
           <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
