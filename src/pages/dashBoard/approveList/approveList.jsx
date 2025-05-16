@@ -42,7 +42,6 @@ const ApproveList = () => {
         },
       });
       const data = await response.json();
-console.log(data)
       if (response.ok) {
         setUsers(data.users);
       } else {

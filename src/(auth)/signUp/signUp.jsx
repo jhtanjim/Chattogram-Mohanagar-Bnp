@@ -99,12 +99,7 @@ const SignUp = () => {
         setWards(wardsData);
         setElectionCenters(electionCentersData);
 
-        console.log("Fetched data:", {
-          mohanagarsData,
-          thanasData,
-          wardsData,
-          electionCentersData,
-        });
+    
       } catch (error) {
         console.error("Error fetching location data:", error);
         setError(`Failed to fetch data: ${error.message}`);
@@ -119,13 +114,7 @@ const SignUp = () => {
     setMathProblem(generateMathProblem());
   }, []);
 
-  // Add these console logs after the existing useEffect
-  useEffect(() => {
-    console.log("Mohanagars:", mohanagars);
-    console.log("Thanas:", thanas);
-    console.log("Wards:", wards);
-    console.log("Election Centers:", electionCenters);
-  }, [mohanagars, thanas, wards, electionCenters]);
+
 
   // Filter wards based on selected thana
   useEffect(() => {
@@ -229,11 +218,7 @@ const SignUp = () => {
         // Show loading indicator or message
         const compressedFile = await compressImage(file);
 
-        console.log(
-          `Original size: ${(file.size / 1024).toFixed(
-            2
-          )}KB, Compressed size: ${(compressedFile.size / 1024).toFixed(2)}KB`
-        );
+     
 
         setFormData({
           ...formData,
