@@ -263,7 +263,7 @@ const Home = () => {
         className="flex-1 flex items-center justify-center bg-black text-white px-6 py-4 rounded-lg hover:bg-gray-800 transition-colors"
       >
         {/* Apple logo */}
-        <svg className="w-6 h-6 md:w-8 md:h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="w-10 h-10 md:w-8 md:h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
           <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
         </svg>
         <div className="flex flex-col items-start">
@@ -277,7 +277,7 @@ const Home = () => {
         className="flex-1 flex items-center justify-center bg-white border border-green-500 text-green-600 px-6 py-4 rounded-lg hover:bg-green-50 transition-colors"
       >
         {/* Android logo */}
-        <svg className="w-6 h-6 md:w-8 md:h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
+        <svg className="w-10 h-10 md:w-8 md:h-8 mr-3" viewBox="0 0 24 24" fill="currentColor">
           <path d="M7.2,16.8a.8.8,0,0,0,.8.8h.8v2.8a1.2,1.2,0,0,0,2.4,0V17.6h1.6v2.8a1.2,1.2,0,0,0,2.4,0V17.6H16a.8.8,0,0,0,.8-.8V8H7.2Zm-2-8.8A1.2,1.2,0,0,0,4,9.2v5.6a1.2,1.2,0,0,0,2.4,0V9.2A1.2,1.2,0,0,0,5.2,8M18.8,8a1.2,1.2,0,0,0-1.2,1.2v5.6a1.2,1.2,0,0,0,2.4,0V9.2A1.2,1.2,0,0,0,18.8,8M16.6,3.6l1.4-1.4a.4.4,0,0,0,0-.6.4.4,0,0,0-.6,0L15.8,3.2a6.6,6.6,0,0,0-7.6,0L6.6,1.6a.4.4,0,0,0-.6,0,.4.4,0,0,0,0,.6L7.4,3.6A5.7,5.7,0,0,0,5,8H19A5.7,5.7,0,0,0,16.6,3.6ZM9.6,6A.8.8,0,1,1,9,5,.8.8,0,0,1,9.6,6Zm4.8,0a.8.8,0,1,1-.8-.8A.8.8,0,0,1,14.4,6Z" />
         </svg>
         <div className="flex flex-col items-start">
