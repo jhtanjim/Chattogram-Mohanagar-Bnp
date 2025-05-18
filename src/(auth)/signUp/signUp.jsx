@@ -49,6 +49,8 @@ const SignUp = () => {
     electionCenterId: "",
     userType: "BNP",
     nid: "",
+    formNumber: "", // <-- NEW FIELD
+
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -308,6 +310,7 @@ const SignUp = () => {
     data.append("userType", formData.userType);
     data.append("nid", formData.nid);
     data.append("image", formData.image);
+    data.append("formNumber", formData.formNumber);
 
     try {
       const response = await fetch(
@@ -525,7 +528,7 @@ const SignUp = () => {
         {/* Location Fields (Mohanagar, Thana, Ward, Election Center) */}
         <div className="lg:flex gap-4 my-4">
           {/* Select Thana */}
-          <div className="w-full">
+          <div className="w-full my-4">
             {/* <label htmlFor="thanaId" className="mb-3 block">
               থানা নির্বাচন করুন
             </label> */}
@@ -639,6 +642,28 @@ const SignUp = () => {
             required
           />
         </div>
+
+        {/* formdata */}
+<div className="mb-4 w-full">
+  <label className="block text-sm font-semibold">ফর্ম নাম্বার (১৪ ডিজিট)</label>
+  <input
+  name="formNumber"
+  value={formData.formNumber}
+  onChange={(e) => {
+    const val = e.target.value;
+    // Only allow digits
+    if (/^\d*$/.test(val)) {
+      setFormData({ ...formData, formNumber: val });
+    }
+  }}
+  placeholder="উদাহরণ: 12345678901234"
+  type="text"
+  maxLength={14}    // <-- max length here
+  className="border rounded-2xl w-full px-4 py-3 mt-2"
+  required
+/>
+
+</div>
 
         {/* CAPTCHA */}
         <div className="my-4">
