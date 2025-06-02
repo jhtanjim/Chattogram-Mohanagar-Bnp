@@ -27,6 +27,7 @@ import ElectionResult from "../pages/dashBoard/electionResult/electionResult";
 import ElectionRes from "../pages/dashBoard/electionResult/electionRes";
 import Dofa from "../pages/Shared/Dofa/Dofa";
 import SingleDofa from "../pages/Shared/Dofa/SingleDofa";
+import PrivacyPolicy from "../pages/Shared/privacyPolicy/privacyPolicy";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
       {
         path: "/electionRes/:electionId",
         element: <ElectionRes />,
+      },
+      {
+        path: "/privacyPolicy",
+        element: <PrivacyPolicy />,
       },
       // Wildcard Route for Undefined Paths
 

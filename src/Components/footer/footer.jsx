@@ -76,6 +76,13 @@ const Footer = () => {
           <p className="text-sm">bnpchittagongcity@gmail.com</p>
           <h2 className="font-bold text-lg mt-4">যোগাযোগ</h2>
           <p className="text-sm">+৮৯০১৬</p>
+
+         <p>
+
+           <Link className="mt-4" to="/privacyPolicy">
+            <p className="text-sm">প্রাইভেসি পলিসি</p>
+          </Link>
+         </p>
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow-lg">
